@@ -256,7 +256,7 @@ async function seed() {
     const deleted = await Design.deleteMany({});
     console.log(`Deleted ${deleted.deletedCount} existing designs`);
 
-    const created = await Design.insertMany(designs);
+    const created = await Design.insertMany(designs as any[]);
     console.log(`Seeded ${created.length} designs successfully`);
 
     await mongoose.disconnect();

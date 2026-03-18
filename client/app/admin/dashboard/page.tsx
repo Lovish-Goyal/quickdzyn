@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { adminRequest, uploadFiles } from "@/lib/api";
@@ -25,7 +25,7 @@ function safeParseContent(value: string) {
   }
 }
 
-export default function AdminDashboardPage() {
+function AdminDashboard() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [token, setToken] = useState<string | null>(null);
@@ -34,7 +34,7 @@ export default function AdminDashboardPage() {
   const [pricing, setPricing] = useState<any[]>([]);
   const [content, setContent] = useState<any[]>([]);
 
-  const [toast, setToast] = useState<{open: boolean; message: string; type: "success" | "error"}>({
+  const [toast, setToast] = useState<{ open: boolean; message: string; type: "success" | "error" }>({
     open: false,
     message: "",
     type: "success",
@@ -90,8 +90,8 @@ export default function AdminDashboardPage() {
     const byCategory = !currentDesignCategories.length
       ? designs
       : designs.filter((item) =>
-          currentDesignCategories.some((cat) => (item.categories || []).includes(cat))
-        );
+        currentDesignCategories.some((cat) => (item.categories || []).includes(cat))
+      );
 
     if (designFilter === "published") {
       return byCategory.filter((item) => item.visible !== false);
@@ -458,563 +458,548 @@ export default function AdminDashboardPage() {
           )}
 
           <div className={activeSection === "home" ? "mt-10 space-y-8" : "space-y-8"}>
-              <section style={{ display: activeSection === "home" ? "block" : "none" }} className={sectionClass}>
-                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6">
-                  <div>
-                    <h2 className="text-[28px] font-bold tracking-tight text-slate-900">Manage Content</h2>
-                    <p className="mt-1 text-[15px] font-medium text-slate-500">
-                      Review and update your digital publications
-                    </p>
-                  </div>
+            <section style={{ display: activeSection === "home" ? "block" : "none" }} className={sectionClass}>
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6">
+                <div>
+                  <h2 className="text-[28px] font-bold tracking-tight text-slate-900">Manage Content</h2>
+                  <p className="mt-1 text-[15px] font-medium text-slate-500">
+                    Review and update your digital publications
+                  </p>
                 </div>
-                <h3 className="text-xl font-semibold text-slate-900">Overview</h3>
-                <p className="text-sm text-slate-600 mt-1">Welcome to the admin dashboard. Use the sidebar to manage different sections of your site.</p>
-              </section>
-              <section
-                style={{
-                  display:
-                    activeSection === "figma-kits" ||
+              </div>
+              <h3 className="text-xl font-semibold text-slate-900">Overview</h3>
+              <p className="text-sm text-slate-600 mt-1">Welcome to the admin dashboard. Use the sidebar to manage different sections of your site.</p>
+            </section>
+            <section
+              style={{
+                display:
+                  activeSection === "figma-kits" ||
                     activeSection === "posters" ||
                     activeSection === "banners" ||
                     activeSection === "templates"
-                      ? "block"
-                      : "none",
-                }}
-                className=""
-              >
-                <div className="flex flex-col gap-3">
-                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-                    <div>
-                      <h2 className="text-[28px] font-bold tracking-tight text-slate-900">Manage Designs</h2>
-                      <p className="mt-1 text-[15px] font-medium text-slate-500">
-                        Add and manage design assets across the store
-                      </p>
-                    </div>
-
-                    <button
-                      onClick={() => {
-                        setCreateModalOpen(true);
-                        setDesignEditingId(null);
-                        setDesignForm({
-                          title: "",
-                          slug: "",
-                          price: "",
-                          category: currentDesignCategories[0] || "",
-                          image: "",
-                          images: [],
-                          description: "",
-                          features: "",
-                          visible: true,
-                          allowReviews: true,
-                        });
-                      }}
-                      className="flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-[14px] font-semibold text-white shadow-sm hover:bg-primary/90 transition"
-                    >
-                      <Plus className="h-4 w-4" />
-                      <span>Create Design</span>
-                    </button>
+                    ? "block"
+                    : "none",
+              }}
+              className=""
+            >
+              <div className="flex flex-col gap-3">
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                  <div>
+                    <h2 className="text-[28px] font-bold tracking-tight text-slate-900">Manage Designs</h2>
+                    <p className="mt-1 text-[15px] font-medium text-slate-500">
+                      Add and manage design assets across the store
+                    </p>
                   </div>
 
-
-
-
-                    <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
-                      <div className="flex flex-wrap items-center gap-2">
-                        {[
-                          { label: "All Items", value: "all" },
-                          { label: "Published", value: "published" },
-                          { label: "Drafts", value: "draft" },
-                          { label: "Archived", value: "archived" },
-                        ].map((tab) => (
-                          <button
-                            key={tab.value}
-                            type="button"
-                            onClick={() => setDesignFilter(tab.value as any)}
-                            className={`rounded-full px-5 py-2 text-[14px] font-semibold transition ${
-                              designFilter === tab.value
-                                ? "bg-primary text-white shadow-sm"
-                                : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50"
-                            }`}
-                          >
-                            {tab.label}
-                          </button>
-                        ))}
-                      </div>
-
-                      <button
-                        type="button"
-                        className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-[14px] font-semibold text-slate-700 hover:bg-slate-50 transition shadow-sm"
-                      >
-                        <Filter className="h-4 w-4 text-slate-500" />
-                        <span>Filter</span>
-                      </button>
-                    </div>
-
-                    <div className="mt-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                      {filteredDesigns.map((item) => {
-                        const status = item.visible === false ? "Draft" : "Published";
-                        const isDraft = status === "Draft";
-
-                        return (
-                          <div
-                            key={item._id}
-                            className="group flex flex-col overflow-hidden rounded-[24px] bg-white border border-slate-100 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] transition hover:shadow-[0_8px_30px_-4px_rgba(0,0,0,0.1)]"
-                          >
-                            <div className="relative h-[200px] w-full bg-slate-50 p-2">
-                              {item.image ? (
-                                <img
-                                  src={item.image}
-                                  alt={item.title}
-                                  className="h-full w-full object-cover rounded-[18px]"
-                                />
-                              ) : null}
-                              
-                              <div
-                                className={`absolute left-5 top-5 rounded-md px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-white shadow-sm ${
-                                  isDraft ? "bg-[#F59E0B]" : "bg-[#10B981]"
-                                }`}
-                              >
-                                {status}
-                              </div>
-                            </div>
-
-                            <div className="flex flex-1 flex-col p-6">
-                              <h3 className="text-[17px] font-bold leading-snug text-slate-900">
-                                {item.title}
-                              </h3>
-                              <p className="mt-2 text-[14px] leading-relaxed text-slate-500 line-clamp-2">
-                                {item.description || "No description provided."}
-                              </p>
-
-                              <div className="mt-auto pt-6 flex items-center justify-between">
-                                <div className="flex items-center gap-2 text-slate-400">
-                                  <Eye className="h-4 w-4" />
-                                  <span className="text-[13px] font-semibold text-slate-500">
-                                    {item.views >= 1000 ? (item.views / 1000).toFixed(1) + "k" : item.views ?? "0"}
-                                  </span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <button
-                                    onClick={() => {
-                                      setCreateModalOpen(true);
-                                      setDesignEditingId(item._id);
-                                      setDesignForm({
-                                        title: item.title,
-                                        slug: item.slug,
-                                        price: item.price,
-                                        category: item.categories?.[0] || "",
-                                        image: item.image,
-                                        images: item.images || (item.image ? [item.image] : []),
-                                        description: item.description,
-                                        features: (item.features || []).join("\n"),
-                                        visible: item.visible ?? true,
-                                        allowReviews: item.allowReviews ?? true,
-                                      });
-                                    }}
-                                    className="flex h-9 w-9 items-center justify-center rounded-[10px] bg-slate-50 text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 border border-transparent hover:border-slate-200"
-                                  >
-                                    <Edit2 className="h-4 w-4" />
-                                  </button>
-                                  <button
-                                    onClick={() =>
-                                      setDeleteTarget({ type: "design", id: item._id, label: item.title })
-                                    }
-                                    className="flex h-9 w-9 items-center justify-center rounded-[10px] bg-slate-50 text-slate-500 transition hover:bg-red-50 hover:text-red-600 border border-transparent hover:border-red-100"
-                                  >
-                                    <Trash2 className="h-4 w-4" />
-                                  </button>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
+                  <button
+                    onClick={() => {
+                      setCreateModalOpen(true);
+                      setDesignEditingId(null);
+                      setDesignForm({
+                        title: "",
+                        slug: "",
+                        price: "",
+                        category: currentDesignCategories[0] || "",
+                        image: "",
+                        images: [],
+                        description: "",
+                        features: "",
+                        visible: true,
+                        allowReviews: true,
+                      });
+                    }}
+                    className="flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-[14px] font-semibold text-white shadow-sm hover:bg-primary/90 transition"
+                  >
+                    <Plus className="h-4 w-4" />
+                    <span>Create Design</span>
+                  </button>
                 </div>
-              </section>
 
-              <section style={{ display: activeSection === "insights" ? "block" : "none" }} className={sectionClass}>
-                    <h2 className="text-xl font-semibold text-slate-900">Insights</h2>
-                    <div className="mt-4 grid gap-4 md:grid-cols-2">
-                      <div className="space-y-1">
-                        <input
-                          placeholder="Title"
-                          value={blogForm.title}
-                          onChange={(event) => {
-                            setBlogForm({ ...blogForm, title: event.target.value });
-                            setBlogErrors((prev) => ({ ...prev, title: "" }));
-                          }}
-                          className={`rounded-2xl border px-4 py-2 text-sm bg-white outline-none transition ${
-                            blogErrors.title ? "border-red-300" : "border-slate-200"
-                          }`}
-                        />
-                        {blogErrors.title ? (
-                          <p className="text-xs text-red-500">{blogErrors.title}</p>
-                        ) : null}
-                      </div>
-                      <div className="space-y-1">
-                        <input
-                          placeholder="Slug"
-                          value={blogForm.slug}
-                          onChange={(event) => {
-                            setBlogForm({ ...blogForm, slug: event.target.value });
-                            setBlogErrors((prev) => ({ ...prev, slug: "" }));
-                          }}
-                          className={`rounded-2xl border px-4 py-2 text-sm bg-white outline-none transition ${
-                            blogErrors.slug ? "border-red-300" : "border-slate-200"
-                          }`}
-                        />
-                        {blogErrors.slug ? (
-                          <p className="text-xs text-red-500">{blogErrors.slug}</p>
-                        ) : null}
-                      </div>
-                      <div className="space-y-1">
-                        <input
-                          placeholder="Date"
-                          value={blogForm.date}
-                          onChange={(event) => {
-                            setBlogForm({ ...blogForm, date: event.target.value });
-                            setBlogErrors((prev) => ({ ...prev, date: "" }));
-                          }}
-                          className={`rounded-2xl border px-4 py-2 text-sm bg-white outline-none transition ${
-                            blogErrors.date ? "border-red-300" : "border-slate-200"
-                          }`}
-                        />
-                        {blogErrors.date ? (
-                          <p className="text-xs text-red-500">{blogErrors.date}</p>
-                        ) : null}
-                      </div>
-                      <div className="space-y-1">
-                        <input
-                          placeholder="Image URL"
-                          value={blogForm.image}
-                          onChange={(event) => {
-                            setBlogForm({ ...blogForm, image: event.target.value });
-                            setBlogErrors((prev) => ({ ...prev, image: "" }));
-                          }}
-                          className={`rounded-2xl border px-4 py-2 text-sm bg-white outline-none transition ${
-                            blogErrors.image ? "border-red-300" : "border-slate-200"
-                          }`}
-                        />
-                        {blogErrors.image ? (
-                          <p className="text-xs text-red-500">{blogErrors.image}</p>
-                        ) : null}
-                      </div>
-                      <div className="space-y-1 md:col-span-2">
-                        <textarea
-                          placeholder="Summary"
-                          value={blogForm.summary}
-                          onChange={(event) => {
-                            setBlogForm({ ...blogForm, summary: event.target.value });
-                            setBlogErrors((prev) => ({ ...prev, summary: "" }));
-                          }}
-                          className={`rounded-2xl border px-4 py-2 text-sm bg-white outline-none transition ${
-                            blogErrors.summary ? "border-red-300" : "border-slate-200"
-                          }`}
-                        />
-                        {blogErrors.summary ? (
-                          <p className="text-xs text-red-500">{blogErrors.summary}</p>
-                        ) : null}
-                      </div>
-                      <div className="space-y-1 md:col-span-2">
-                        <textarea
-                          placeholder="Content JSON (array of blocks)"
-                          value={blogForm.content}
-                          onChange={(event) => {
-                            setBlogForm({ ...blogForm, content: event.target.value });
-                            setBlogErrors((prev) => ({ ...prev, content: "" }));
-                          }}
-                          className={`rounded-2xl border px-4 py-2 text-sm bg-white outline-none transition ${
-                            blogErrors.content ? "border-red-300" : "border-slate-200"
-                          }`}
-                          rows={6}
-                        />
-                        {blogErrors.content ? (
-                          <p className="text-xs text-red-500">{blogErrors.content}</p>
-                        ) : null}
-                      </div>
-                    </div>
-                    <div className="mt-4 flex flex-wrap gap-3">
+
+
+
+                <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
+                  <div className="flex flex-wrap items-center gap-2">
+                    {[
+                      { label: "All Items", value: "all" },
+                      { label: "Published", value: "published" },
+                      { label: "Drafts", value: "draft" },
+                      { label: "Archived", value: "archived" },
+                    ].map((tab) => (
                       <button
-                        onClick={handleBlogSubmit}
-                        className="rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white"
+                        key={tab.value}
+                        type="button"
+                        onClick={() => setDesignFilter(tab.value as any)}
+                        className={`rounded-full px-5 py-2 text-[14px] font-semibold transition ${designFilter === tab.value
+                            ? "bg-primary text-white shadow-sm"
+                            : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50"
+                          }`}
                       >
-                        {blogEditingId ? "Update Blog" : "Create Blog"}
+                        {tab.label}
                       </button>
-                      {blogEditingId ? (
-                        <button
-                          onClick={() => {
-                            setBlogEditingId(null);
-                            setBlogForm({
-                              title: "",
-                              slug: "",
-                              summary: "",
-                              image: "",
-                              date: "",
-                              content: "[]",
-                            });
-                          }}
-                          className="rounded-full border border-slate-200 px-4 py-2 text-sm"
-                        >
-                          Cancel
-                        </button>
-                      ) : null}
-                    </div>
-                    <div className="mt-6 grid gap-4 md:grid-cols-2">
-                      {blogs.map((item) => (
-                        <div
-                          key={item._id}
-                          className="group flex flex-col justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-lg"
-                        >
-                          <div>
-                            <p className="text-sm font-semibold text-slate-900">{item.title}</p>
-                            <p className="text-xs text-slate-500">{item.slug}</p>
-                            {item.date ? (
-                              <p className="mt-1 text-xs text-slate-500">{item.date}</p>
-                            ) : null}
-                          </div>
-                          <div className="flex flex-wrap gap-2">
-                            <button
-                              onClick={() => {
-                                setBlogEditingId(item._id);
-                                setBlogForm({
-                                  title: item.title,
-                                  slug: item.slug,
-                                  summary: item.summary,
-                                  image: item.image,
-                                  date: item.date,
-                                  content: JSON.stringify(item.content || [], null, 2),
-                                });
-                              }}
-                              className="rounded-full border border-slate-200 px-3 py-1 text-xs"
-                            >
-                              Edit
-                            </button>
-                            <button
-                              onClick={() =>
-                                setDeleteTarget({ type: "blog", id: item._id, label: item.title })
-                              }
-                              className="rounded-full border border-red-200 px-3 py-1 text-xs text-red-600"
-                            >
-                              Delete
-                            </button>
+                    ))}
+                  </div>
+
+                  <button
+                    type="button"
+                    className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-[14px] font-semibold text-slate-700 hover:bg-slate-50 transition shadow-sm"
+                  >
+                    <Filter className="h-4 w-4 text-slate-500" />
+                    <span>Filter</span>
+                  </button>
+                </div>
+
+                <div className="mt-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                  {filteredDesigns.map((item) => {
+                    const status = item.visible === false ? "Draft" : "Published";
+                    const isDraft = status === "Draft";
+
+                    return (
+                      <div
+                        key={item._id}
+                        className="group flex flex-col overflow-hidden rounded-[24px] bg-white border border-slate-100 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] transition hover:shadow-[0_8px_30px_-4px_rgba(0,0,0,0.1)]"
+                      >
+                        <div className="relative h-[200px] w-full bg-slate-50 p-2">
+                          {item.image ? (
+                            <img
+                              src={item.image}
+                              alt={item.title}
+                              className="h-full w-full object-cover rounded-[18px]"
+                            />
+                          ) : null}
+
+                          <div
+                            className={`absolute left-5 top-5 rounded-md px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-white shadow-sm ${isDraft ? "bg-[#F59E0B]" : "bg-[#10B981]"
+                              }`}
+                          >
+                            {status}
                           </div>
                         </div>
-                      ))}
-                    </div>
-                  </section>
 
-              <section style={{ display: activeSection === "pricing" ? "block" : "none" }} className={sectionClass}>
-                <h2 className="text-xl font-semibold text-slate-900">Pricing</h2>
-                <div className="mt-4 grid gap-4 md:grid-cols-2">
-                  <div className="space-y-1">
-                    <input
-                      placeholder="Plan Name"
-                      value={pricingForm.name}
-                      onChange={(event) => {
-                        setPricingForm({ ...pricingForm, name: event.target.value });
-                        setPricingErrors((prev) => ({ ...prev, name: "" }));
-                      }}
-                      className={`rounded-2xl border px-4 py-2 text-sm bg-white outline-none transition ${
-                        pricingErrors.name ? "border-red-300" : "border-slate-200"
-                      }`}
-                    />
-                    {pricingErrors.name ? (
-                      <p className="text-xs text-red-500">{pricingErrors.name}</p>
-                    ) : null}
-                  </div>
-                  <div className="space-y-1">
-                    <input
-                      placeholder="Price"
-                      value={pricingForm.price}
-                      onChange={(event) => {
-                        setPricingForm({ ...pricingForm, price: event.target.value });
-                        setPricingErrors((prev) => ({ ...prev, price: "" }));
-                      }}
-                      className={`rounded-2xl border px-4 py-2 text-sm bg-white outline-none transition ${
-                        pricingErrors.price ? "border-red-300" : "border-slate-200"
-                      }`}
-                    />
-                    {pricingErrors.price ? (
-                      <p className="text-xs text-red-500">{pricingErrors.price}</p>
-                    ) : null}
-                  </div>
-                  <div className="space-y-1 md:col-span-2">
-                    <textarea
-                      placeholder="Description"
-                      value={pricingForm.description}
-                      onChange={(event) => {
-                        setPricingForm({ ...pricingForm, description: event.target.value });
-                        setPricingErrors((prev) => ({ ...prev, description: "" }));
-                      }}
-                      className={`rounded-2xl border px-4 py-2 text-sm bg-white outline-none transition ${
-                        pricingErrors.description ? "border-red-300" : "border-slate-200"
-                      }`}
-                    />
-                    {pricingErrors.description ? (
-                      <p className="text-xs text-red-500">{pricingErrors.description}</p>
-                    ) : null}
-                  </div>
-                  <div className="space-y-1 md:col-span-2">
-                    <textarea
-                      placeholder="Features (one per line)"
-                      value={pricingForm.features}
-                      onChange={(event) => {
-                        setPricingForm({ ...pricingForm, features: event.target.value });
-                        setPricingErrors((prev) => ({ ...prev, features: "" }));
-                      }}
-                      className={`rounded-2xl border px-4 py-2 text-sm bg-white outline-none transition ${
-                        pricingErrors.features ? "border-red-300" : "border-slate-200"
-                      }`}
-                    />
-                    {pricingErrors.features ? (
-                      <p className="text-xs text-red-500">{pricingErrors.features}</p>
-                    ) : null}
-                  </div>
-                  <label className="flex items-center gap-2 text-sm text-slate-700">
-                    <input
-                      type="checkbox"
-                      checked={pricingForm.highlight}
-                      onChange={(event) => setPricingForm({ ...pricingForm, highlight: event.target.checked })}
-                    />
-                    Highlight plan
-                  </label>
+                        <div className="flex flex-1 flex-col p-6">
+                          <h3 className="text-[17px] font-bold leading-snug text-slate-900">
+                            {item.title}
+                          </h3>
+                          <p className="mt-2 text-[14px] leading-relaxed text-slate-500 line-clamp-2">
+                            {item.description || "No description provided."}
+                          </p>
+
+                          <div className="mt-auto pt-6 flex items-center justify-between">
+                            <div className="flex items-center gap-2 text-slate-400">
+                              <Eye className="h-4 w-4" />
+                              <span className="text-[13px] font-semibold text-slate-500">
+                                {item.views >= 1000 ? (item.views / 1000).toFixed(1) + "k" : item.views ?? "0"}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <button
+                                onClick={() => {
+                                  setCreateModalOpen(true);
+                                  setDesignEditingId(item._id);
+                                  setDesignForm({
+                                    title: item.title,
+                                    slug: item.slug,
+                                    price: item.price,
+                                    category: item.categories?.[0] || "",
+                                    image: item.image,
+                                    images: item.images || (item.image ? [item.image] : []),
+                                    description: item.description,
+                                    features: (item.features || []).join("\n"),
+                                    visible: item.visible ?? true,
+                                    allowReviews: item.allowReviews ?? true,
+                                  });
+                                }}
+                                className="flex h-9 w-9 items-center justify-center rounded-[10px] bg-slate-50 text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 border border-transparent hover:border-slate-200"
+                              >
+                                <Edit2 className="h-4 w-4" />
+                              </button>
+                              <button
+                                onClick={() =>
+                                  setDeleteTarget({ type: "design", id: item._id, label: item.title })
+                                }
+                                className="flex h-9 w-9 items-center justify-center rounded-[10px] bg-slate-50 text-slate-500 transition hover:bg-red-50 hover:text-red-600 border border-transparent hover:border-red-100"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
-                <div className="mt-4 flex flex-wrap gap-3">
-                  <button
-                    onClick={handlePricingSubmit}
-                    className="rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white"
-                  >
-                    {pricingEditingId ? "Update Plan" : "Create Plan"}
-                  </button>
-                  {pricingEditingId ? (
-                    <button
-                      onClick={() => {
-                        setPricingEditingId(null);
-                        setPricingForm({ name: "", price: "", description: "", features: "", highlight: false });
-                      }}
-                      className="rounded-full border border-slate-200 px-4 py-2 text-sm"
-                    >
-                      Cancel
-                    </button>
+              </div>
+            </section>
+
+            <section style={{ display: activeSection === "insights" ? "block" : "none" }} className={sectionClass}>
+              <h2 className="text-xl font-semibold text-slate-900">Insights</h2>
+              <div className="mt-4 grid gap-4 md:grid-cols-2">
+                <div className="space-y-1">
+                  <input
+                    placeholder="Title"
+                    value={blogForm.title}
+                    onChange={(event) => {
+                      setBlogForm({ ...blogForm, title: event.target.value });
+                      setBlogErrors((prev) => ({ ...prev, title: "" }));
+                    }}
+                    className={`rounded-2xl border px-4 py-2 text-sm bg-white outline-none transition ${blogErrors.title ? "border-red-300" : "border-slate-200"
+                      }`}
+                  />
+                  {blogErrors.title ? (
+                    <p className="text-xs text-red-500">{blogErrors.title}</p>
                   ) : null}
                 </div>
-                <div className="mt-6 grid gap-4 md:grid-cols-2">
-                  {pricing.map((item) => (
-                    <div
-                      key={item._id}
-                      className="group flex flex-col justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-lg"
-                    >
-                      <div>
-                        <p className="text-sm font-semibold text-slate-900">{item.name}</p>
-                        <p className="text-xs text-slate-500">{item.price}</p>
-                        {item.description ? (
-                          <p className="mt-1 text-xs text-slate-500">{item.description}</p>
-                        ) : null}
-                      </div>
-                      <div className="flex flex-wrap gap-2">
-                        <button
-                          onClick={() => {
-                            setPricingEditingId(item._id);
-                            setPricingForm({
-                              name: item.name,
-                              price: item.price,
-                              description: item.description,
-                              features: (item.features || []).join("\n"),
-                              highlight: !!item.highlight,
-                            });
-                          }}
-                          className="rounded-full border border-slate-200 px-3 py-1 text-xs"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() =>
-                            setDeleteTarget({ type: "pricing", id: item._id, label: item.name })
-                          }
-                          className="rounded-full border border-red-200 px-3 py-1 text-xs text-red-600"
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </div>
-                  ))}
+                <div className="space-y-1">
+                  <input
+                    placeholder="Slug"
+                    value={blogForm.slug}
+                    onChange={(event) => {
+                      setBlogForm({ ...blogForm, slug: event.target.value });
+                      setBlogErrors((prev) => ({ ...prev, slug: "" }));
+                    }}
+                    className={`rounded-2xl border px-4 py-2 text-sm bg-white outline-none transition ${blogErrors.slug ? "border-red-300" : "border-slate-200"
+                      }`}
+                  />
+                  {blogErrors.slug ? (
+                    <p className="text-xs text-red-500">{blogErrors.slug}</p>
+                  ) : null}
                 </div>
-              </section>
-
-              <section style={{ display: (activeSection === "about" || activeSection === "support") ? "block" : "none" }} className={sectionClass}>
-                <h2 className="text-xl font-semibold text-slate-900">Site Content - {activeSection.charAt(0).toUpperCase() + activeSection.slice(1)}</h2>
-                <div className="mt-4 grid gap-4">
-                  <div className="space-y-1">
-                    <input
-                      placeholder="Key (about, terms, privacy)"
-                      value={contentForm.key}
-                      onChange={(event) => {
-                        setContentForm({ ...contentForm, key: event.target.value });
-                        setContentErrors((prev) => ({ ...prev, key: "" }));
-                      }}
-                      className={`rounded-2xl border px-4 py-2 text-sm bg-white outline-none transition ${
-                        contentErrors.key ? "border-red-300" : "border-slate-200"
+                <div className="space-y-1">
+                  <input
+                    placeholder="Date"
+                    value={blogForm.date}
+                    onChange={(event) => {
+                      setBlogForm({ ...blogForm, date: event.target.value });
+                      setBlogErrors((prev) => ({ ...prev, date: "" }));
+                    }}
+                    className={`rounded-2xl border px-4 py-2 text-sm bg-white outline-none transition ${blogErrors.date ? "border-red-300" : "border-slate-200"
                       }`}
-                    />
-                    {contentErrors.key ? (
-                      <p className="text-xs text-red-500">{contentErrors.key}</p>
-                    ) : null}
-                  </div>
-                  <div className="space-y-1">
-                    <input
-                      placeholder="Title"
-                      value={contentForm.title}
-                      onChange={(event) => {
-                        setContentForm({ ...contentForm, title: event.target.value });
-                        setContentErrors((prev) => ({ ...prev, title: "" }));
-                      }}
-                      className={`rounded-2xl border px-4 py-2 text-sm bg-white outline-none transition ${
-                        contentErrors.title ? "border-red-300" : "border-slate-200"
-                      }`}
-                    />
-                    {contentErrors.title ? (
-                      <p className="text-xs text-red-500">{contentErrors.title}</p>
-                    ) : null}
-                  </div>
-                  <div className="space-y-1">
-                    <textarea
-                      placeholder="Body (one paragraph per line)"
-                      value={contentForm.body}
-                      onChange={(event) => {
-                        setContentForm({ ...contentForm, body: event.target.value });
-                        setContentErrors((prev) => ({ ...prev, body: "" }));
-                      }}
-                      className={`rounded-2xl border px-4 py-2 text-sm bg-white outline-none transition ${
-                        contentErrors.body ? "border-red-300" : "border-slate-200"
-                      }`}
-                      rows={6}
-                    />
-                    {contentErrors.body ? (
-                      <p className="text-xs text-red-500">{contentErrors.body}</p>
-                    ) : null}
-                  </div>
+                  />
+                  {blogErrors.date ? (
+                    <p className="text-xs text-red-500">{blogErrors.date}</p>
+                  ) : null}
                 </div>
-                <div className="mt-4">
+                <div className="space-y-1">
+                  <input
+                    placeholder="Image URL"
+                    value={blogForm.image}
+                    onChange={(event) => {
+                      setBlogForm({ ...blogForm, image: event.target.value });
+                      setBlogErrors((prev) => ({ ...prev, image: "" }));
+                    }}
+                    className={`rounded-2xl border px-4 py-2 text-sm bg-white outline-none transition ${blogErrors.image ? "border-red-300" : "border-slate-200"
+                      }`}
+                  />
+                  {blogErrors.image ? (
+                    <p className="text-xs text-red-500">{blogErrors.image}</p>
+                  ) : null}
+                </div>
+                <div className="space-y-1 md:col-span-2">
+                  <textarea
+                    placeholder="Summary"
+                    value={blogForm.summary}
+                    onChange={(event) => {
+                      setBlogForm({ ...blogForm, summary: event.target.value });
+                      setBlogErrors((prev) => ({ ...prev, summary: "" }));
+                    }}
+                    className={`rounded-2xl border px-4 py-2 text-sm bg-white outline-none transition ${blogErrors.summary ? "border-red-300" : "border-slate-200"
+                      }`}
+                  />
+                  {blogErrors.summary ? (
+                    <p className="text-xs text-red-500">{blogErrors.summary}</p>
+                  ) : null}
+                </div>
+                <div className="space-y-1 md:col-span-2">
+                  <textarea
+                    placeholder="Content JSON (array of blocks)"
+                    value={blogForm.content}
+                    onChange={(event) => {
+                      setBlogForm({ ...blogForm, content: event.target.value });
+                      setBlogErrors((prev) => ({ ...prev, content: "" }));
+                    }}
+                    className={`rounded-2xl border px-4 py-2 text-sm bg-white outline-none transition ${blogErrors.content ? "border-red-300" : "border-slate-200"
+                      }`}
+                    rows={6}
+                  />
+                  {blogErrors.content ? (
+                    <p className="text-xs text-red-500">{blogErrors.content}</p>
+                  ) : null}
+                </div>
+              </div>
+              <div className="mt-4 flex flex-wrap gap-3">
+                <button
+                  onClick={handleBlogSubmit}
+                  className="rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white"
+                >
+                  {blogEditingId ? "Update Blog" : "Create Blog"}
+                </button>
+                {blogEditingId ? (
                   <button
-                    onClick={handleContentSubmit}
-                    className="rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white"
+                    onClick={() => {
+                      setBlogEditingId(null);
+                      setBlogForm({
+                        title: "",
+                        slug: "",
+                        summary: "",
+                        image: "",
+                        date: "",
+                        content: "[]",
+                      });
+                    }}
+                    className="rounded-full border border-slate-200 px-4 py-2 text-sm"
                   >
-                    Save Content
+                    Cancel
                   </button>
-                </div>
-                <div className="mt-6 space-y-3">
-                  {content.map((item) => (
-                    <div
-                      key={item._id}
-                      className="rounded-2xl border border-slate-200 bg-white px-4 py-3"
-                    >
-                      <p className="text-sm font-semibold text-slate-900">{item.key}</p>
-                      <p className="text-xs text-slate-500">{item.title}</p>
+                ) : null}
+              </div>
+              <div className="mt-6 grid gap-4 md:grid-cols-2">
+                {blogs.map((item) => (
+                  <div
+                    key={item._id}
+                    className="group flex flex-col justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-lg"
+                  >
+                    <div>
+                      <p className="text-sm font-semibold text-slate-900">{item.title}</p>
+                      <p className="text-xs text-slate-500">{item.slug}</p>
+                      {item.date ? (
+                        <p className="mt-1 text-xs text-slate-500">{item.date}</p>
+                      ) : null}
                     </div>
-                  ))}
+                    <div className="flex flex-wrap gap-2">
+                      <button
+                        onClick={() => {
+                          setBlogEditingId(item._id);
+                          setBlogForm({
+                            title: item.title,
+                            slug: item.slug,
+                            summary: item.summary,
+                            image: item.image,
+                            date: item.date,
+                            content: JSON.stringify(item.content || [], null, 2),
+                          });
+                        }}
+                        className="rounded-full border border-slate-200 px-3 py-1 text-xs"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() =>
+                          setDeleteTarget({ type: "blog", id: item._id, label: item.title })
+                        }
+                        className="rounded-full border border-red-200 px-3 py-1 text-xs text-red-600"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section style={{ display: activeSection === "pricing" ? "block" : "none" }} className={sectionClass}>
+              <h2 className="text-xl font-semibold text-slate-900">Pricing</h2>
+              <div className="mt-4 grid gap-4 md:grid-cols-2">
+                <div className="space-y-1">
+                  <input
+                    placeholder="Plan Name"
+                    value={pricingForm.name}
+                    onChange={(event) => {
+                      setPricingForm({ ...pricingForm, name: event.target.value });
+                      setPricingErrors((prev) => ({ ...prev, name: "" }));
+                    }}
+                    className={`rounded-2xl border px-4 py-2 text-sm bg-white outline-none transition ${pricingErrors.name ? "border-red-300" : "border-slate-200"
+                      }`}
+                  />
+                  {pricingErrors.name ? (
+                    <p className="text-xs text-red-500">{pricingErrors.name}</p>
+                  ) : null}
                 </div>
-              </section>
+                <div className="space-y-1">
+                  <input
+                    placeholder="Price"
+                    value={pricingForm.price}
+                    onChange={(event) => {
+                      setPricingForm({ ...pricingForm, price: event.target.value });
+                      setPricingErrors((prev) => ({ ...prev, price: "" }));
+                    }}
+                    className={`rounded-2xl border px-4 py-2 text-sm bg-white outline-none transition ${pricingErrors.price ? "border-red-300" : "border-slate-200"
+                      }`}
+                  />
+                  {pricingErrors.price ? (
+                    <p className="text-xs text-red-500">{pricingErrors.price}</p>
+                  ) : null}
+                </div>
+                <div className="space-y-1 md:col-span-2">
+                  <textarea
+                    placeholder="Description"
+                    value={pricingForm.description}
+                    onChange={(event) => {
+                      setPricingForm({ ...pricingForm, description: event.target.value });
+                      setPricingErrors((prev) => ({ ...prev, description: "" }));
+                    }}
+                    className={`rounded-2xl border px-4 py-2 text-sm bg-white outline-none transition ${pricingErrors.description ? "border-red-300" : "border-slate-200"
+                      }`}
+                  />
+                  {pricingErrors.description ? (
+                    <p className="text-xs text-red-500">{pricingErrors.description}</p>
+                  ) : null}
+                </div>
+                <div className="space-y-1 md:col-span-2">
+                  <textarea
+                    placeholder="Features (one per line)"
+                    value={pricingForm.features}
+                    onChange={(event) => {
+                      setPricingForm({ ...pricingForm, features: event.target.value });
+                      setPricingErrors((prev) => ({ ...prev, features: "" }));
+                    }}
+                    className={`rounded-2xl border px-4 py-2 text-sm bg-white outline-none transition ${pricingErrors.features ? "border-red-300" : "border-slate-200"
+                      }`}
+                  />
+                  {pricingErrors.features ? (
+                    <p className="text-xs text-red-500">{pricingErrors.features}</p>
+                  ) : null}
+                </div>
+                <label className="flex items-center gap-2 text-sm text-slate-700">
+                  <input
+                    type="checkbox"
+                    checked={pricingForm.highlight}
+                    onChange={(event) => setPricingForm({ ...pricingForm, highlight: event.target.checked })}
+                  />
+                  Highlight plan
+                </label>
+              </div>
+              <div className="mt-4 flex flex-wrap gap-3">
+                <button
+                  onClick={handlePricingSubmit}
+                  className="rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white"
+                >
+                  {pricingEditingId ? "Update Plan" : "Create Plan"}
+                </button>
+                {pricingEditingId ? (
+                  <button
+                    onClick={() => {
+                      setPricingEditingId(null);
+                      setPricingForm({ name: "", price: "", description: "", features: "", highlight: false });
+                    }}
+                    className="rounded-full border border-slate-200 px-4 py-2 text-sm"
+                  >
+                    Cancel
+                  </button>
+                ) : null}
+              </div>
+              <div className="mt-6 grid gap-4 md:grid-cols-2">
+                {pricing.map((item) => (
+                  <div
+                    key={item._id}
+                    className="group flex flex-col justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-lg"
+                  >
+                    <div>
+                      <p className="text-sm font-semibold text-slate-900">{item.name}</p>
+                      <p className="text-xs text-slate-500">{item.price}</p>
+                      {item.description ? (
+                        <p className="mt-1 text-xs text-slate-500">{item.description}</p>
+                      ) : null}
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      <button
+                        onClick={() => {
+                          setPricingEditingId(item._id);
+                          setPricingForm({
+                            name: item.name,
+                            price: item.price,
+                            description: item.description,
+                            features: (item.features || []).join("\n"),
+                            highlight: !!item.highlight,
+                          });
+                        }}
+                        className="rounded-full border border-slate-200 px-3 py-1 text-xs"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() =>
+                          setDeleteTarget({ type: "pricing", id: item._id, label: item.name })
+                        }
+                        className="rounded-full border border-red-200 px-3 py-1 text-xs text-red-600"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section style={{ display: (activeSection === "about" || activeSection === "support") ? "block" : "none" }} className={sectionClass}>
+              <h2 className="text-xl font-semibold text-slate-900">Site Content - {activeSection.charAt(0).toUpperCase() + activeSection.slice(1)}</h2>
+              <div className="mt-4 grid gap-4">
+                <div className="space-y-1">
+                  <input
+                    placeholder="Key (about, terms, privacy)"
+                    value={contentForm.key}
+                    onChange={(event) => {
+                      setContentForm({ ...contentForm, key: event.target.value });
+                      setContentErrors((prev) => ({ ...prev, key: "" }));
+                    }}
+                    className={`rounded-2xl border px-4 py-2 text-sm bg-white outline-none transition ${contentErrors.key ? "border-red-300" : "border-slate-200"
+                      }`}
+                  />
+                  {contentErrors.key ? (
+                    <p className="text-xs text-red-500">{contentErrors.key}</p>
+                  ) : null}
+                </div>
+                <div className="space-y-1">
+                  <input
+                    placeholder="Title"
+                    value={contentForm.title}
+                    onChange={(event) => {
+                      setContentForm({ ...contentForm, title: event.target.value });
+                      setContentErrors((prev) => ({ ...prev, title: "" }));
+                    }}
+                    className={`rounded-2xl border px-4 py-2 text-sm bg-white outline-none transition ${contentErrors.title ? "border-red-300" : "border-slate-200"
+                      }`}
+                  />
+                  {contentErrors.title ? (
+                    <p className="text-xs text-red-500">{contentErrors.title}</p>
+                  ) : null}
+                </div>
+                <div className="space-y-1">
+                  <textarea
+                    placeholder="Body (one paragraph per line)"
+                    value={contentForm.body}
+                    onChange={(event) => {
+                      setContentForm({ ...contentForm, body: event.target.value });
+                      setContentErrors((prev) => ({ ...prev, body: "" }));
+                    }}
+                    className={`rounded-2xl border px-4 py-2 text-sm bg-white outline-none transition ${contentErrors.body ? "border-red-300" : "border-slate-200"
+                      }`}
+                    rows={6}
+                  />
+                  {contentErrors.body ? (
+                    <p className="text-xs text-red-500">{contentErrors.body}</p>
+                  ) : null}
+                </div>
+              </div>
+              <div className="mt-4">
+                <button
+                  onClick={handleContentSubmit}
+                  className="rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white"
+                >
+                  Save Content
+                </button>
+              </div>
+              <div className="mt-6 space-y-3">
+                {content.map((item) => (
+                  <div
+                    key={item._id}
+                    className="rounded-2xl border border-slate-200 bg-white px-4 py-3"
+                  >
+                    <p className="text-sm font-semibold text-slate-900">{item.key}</p>
+                    <p className="text-xs text-slate-500">{item.title}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
           </div>
         </div>
       </section>
@@ -1091,9 +1076,8 @@ export default function AdminDashboardPage() {
                         setDesignForm({ ...designForm, title: event.target.value });
                         setDesignErrors((prev) => ({ ...prev, title: "" }));
                       }}
-                      className={`w-full rounded-xl border px-4 py-2.5 text-sm bg-white outline-none transition focus:border-primary/60 focus:ring-2 focus:ring-primary/10 ${
-                        designErrors.title ? "border-red-300" : "border-slate-200"
-                      }`}
+                      className={`w-full rounded-xl border px-4 py-2.5 text-sm bg-white outline-none transition focus:border-primary/60 focus:ring-2 focus:ring-primary/10 ${designErrors.title ? "border-red-300" : "border-slate-200"
+                        }`}
                     />
                     {designErrors.title && <p className="text-xs text-red-500">{designErrors.title}</p>}
                   </div>
@@ -1110,9 +1094,8 @@ export default function AdminDashboardPage() {
                           setDesignForm({ ...designForm, slug: event.target.value });
                           setDesignErrors((prev) => ({ ...prev, slug: "" }));
                         }}
-                        className={`w-full rounded-xl border px-4 py-2.5 text-sm bg-white outline-none transition focus:border-primary/60 focus:ring-2 focus:ring-primary/10 ${
-                          designErrors.slug ? "border-red-300" : "border-slate-200"
-                        }`}
+                        className={`w-full rounded-xl border px-4 py-2.5 text-sm bg-white outline-none transition focus:border-primary/60 focus:ring-2 focus:ring-primary/10 ${designErrors.slug ? "border-red-300" : "border-slate-200"
+                          }`}
                       />
                       {designErrors.slug && <p className="text-xs text-red-500">{designErrors.slug}</p>}
                     </div>
@@ -1127,9 +1110,8 @@ export default function AdminDashboardPage() {
                           setDesignForm({ ...designForm, price: event.target.value });
                           setDesignErrors((prev) => ({ ...prev, price: "" }));
                         }}
-                        className={`w-full rounded-xl border px-4 py-2.5 text-sm bg-white outline-none transition focus:border-primary/60 focus:ring-2 focus:ring-primary/10 ${
-                          designErrors.price ? "border-red-300" : "border-slate-200"
-                        }`}
+                        className={`w-full rounded-xl border px-4 py-2.5 text-sm bg-white outline-none transition focus:border-primary/60 focus:ring-2 focus:ring-primary/10 ${designErrors.price ? "border-red-300" : "border-slate-200"
+                          }`}
                       />
                       {designErrors.price && <p className="text-xs text-red-500">{designErrors.price}</p>}
                     </div>
@@ -1162,9 +1144,8 @@ export default function AdminDashboardPage() {
                         setDesignForm({ ...designForm, description: event.target.value });
                         setDesignErrors((prev) => ({ ...prev, description: "" }));
                       }}
-                      className={`w-full rounded-xl border px-4 py-2.5 text-sm bg-white outline-none transition focus:border-primary/60 focus:ring-2 focus:ring-primary/10 ${
-                        designErrors.description ? "border-red-300" : "border-slate-200"
-                      }`}
+                      className={`w-full rounded-xl border px-4 py-2.5 text-sm bg-white outline-none transition focus:border-primary/60 focus:ring-2 focus:ring-primary/10 ${designErrors.description ? "border-red-300" : "border-slate-200"
+                        }`}
                       rows={3}
                     />
                     {designErrors.description && <p className="text-xs text-red-500">{designErrors.description}</p>}
@@ -1181,9 +1162,8 @@ export default function AdminDashboardPage() {
                         setDesignForm({ ...designForm, features: event.target.value });
                         setDesignErrors((prev) => ({ ...prev, features: "" }));
                       }}
-                      className={`w-full rounded-xl border px-4 py-2.5 text-sm bg-white outline-none transition focus:border-primary/60 focus:ring-2 focus:ring-primary/10 ${
-                        designErrors.features ? "border-red-300" : "border-slate-200"
-                      }`}
+                      className={`w-full rounded-xl border px-4 py-2.5 text-sm bg-white outline-none transition focus:border-primary/60 focus:ring-2 focus:ring-primary/10 ${designErrors.features ? "border-red-300" : "border-slate-200"
+                        }`}
                       rows={3}
                     />
                     {designErrors.features && <p className="text-xs text-red-500">{designErrors.features}</p>}
@@ -1198,9 +1178,8 @@ export default function AdminDashboardPage() {
 
                   <label
                     htmlFor="design-images-modal"
-                    className={`flex min-h-[120px] w-full cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed ${
-                      designErrors.image ? "border-red-300" : "border-slate-200"
-                    } bg-white p-4 text-center transition hover:border-primary/40`}
+                    className={`flex min-h-[120px] w-full cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed ${designErrors.image ? "border-red-300" : "border-slate-200"
+                      } bg-white p-4 text-center transition hover:border-primary/40`}
                   >
                     <div className="flex flex-col items-center gap-1.5">
                       <span className="text-2xl">📷</span>
@@ -1303,5 +1282,17 @@ export default function AdminDashboardPage() {
         </div>
       )}
     </main>
+  );
+}
+
+export default function AdminDashboardPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex min-h-screen items-center justify-center bg-white">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+      </div>
+    }>
+      <AdminDashboard />
+    </Suspense>
   );
 }

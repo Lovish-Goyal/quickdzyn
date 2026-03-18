@@ -1,4 +1,4 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, Model, InferSchemaType } from "mongoose";
 
 const DesignSchema = new Schema(
   {
@@ -14,5 +14,8 @@ const DesignSchema = new Schema(
   { timestamps: true }
 );
 
-export const Design =
-  mongoose.models.Design || mongoose.model("Design", DesignSchema);
+type DesignType = InferSchemaType<typeof DesignSchema>;
+
+export const Design: Model<DesignType> =
+  (mongoose.models.Design as Model<DesignType>) ??
+  mongoose.model<DesignType>("Design", DesignSchema);

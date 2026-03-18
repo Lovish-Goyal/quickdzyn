@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
@@ -100,13 +100,18 @@ const clauses = [
   },
 ];
 
+interface Content {
+  title: string;
+  body: string[];
+}
+
 export default function TermsPage() {
   const [content, setContent] = useState(fallback);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setLoading(true);
-    getContent("terms")
+    getContent<Content>("terms")
       .then((data) => data && data.title && setContent(data))
       .catch(() => null)
       .finally(() => setLoading(false));

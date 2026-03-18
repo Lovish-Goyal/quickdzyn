@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
@@ -75,13 +75,18 @@ const details = [
   },
 ];
 
+interface Content {
+  title: string;
+  body: string[];
+}
+
 export default function PrivacyPage() {
   const [content, setContent] = useState<any>(fallback);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setLoading(true);
-    getContent("privacy")
+    getContent<Content>("privacy")
       .then((data) => {
         if (data && data.title) setContent(data);
       })

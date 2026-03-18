@@ -1,4 +1,4 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, Model, InferSchemaType } from "mongoose";
 
 const BlogSchema = new Schema(
   {
@@ -12,4 +12,7 @@ const BlogSchema = new Schema(
   { timestamps: true }
 );
 
-export const Blog = mongoose.models.Blog || mongoose.model("Blog", BlogSchema);
+type BlogType = InferSchemaType<typeof BlogSchema>;
+
+export const Blog: Model<BlogType> =
+  (mongoose.models.Blog as Model<BlogType>) ?? mongoose.model<BlogType>("Blog", BlogSchema);

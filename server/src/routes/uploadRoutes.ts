@@ -20,7 +20,8 @@ const upload = multer({
 // Accept multiple files and return accessible URLs
 router.post("/upload", upload.array("files"), (req, res) => {
   const baseUrl = `${req.protocol}://${req.get("host")}`;
-  const urls = (req.files || []).map((file: any) => `${baseUrl}/uploads/${file.filename}`);
+  const files = (req.files as Express.Multer.File[] | undefined) ?? [];
+  const urls = files.map((file) => `${baseUrl}/uploads/${file.filename}`);
   res.json({ urls });
 });
 

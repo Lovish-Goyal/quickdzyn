@@ -32,8 +32,8 @@ export function getPricing() {
   return fetchJSON(`${API_URL}/api/pricing`);
 }
 
-export function getContent(key: string) {
-  return fetchJSON(`${API_URL}/api/content/${key}`);
+export function getContent<T = any>(key: string) {
+  return fetchJSON<T>(`${API_URL}/api/content/${key}`);
 }
 
 export function uploadFiles(files: File[]) {

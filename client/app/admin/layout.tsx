@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode } from "react";
+import { ReactNode, Suspense } from "react";
 import { usePathname } from "next/navigation";
 import AdminSidebar from "@/components/admin-sidebar";
 import AdminTopbar from "@/components/admin-topbar";
@@ -22,7 +22,20 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
     <div className="min-h-screen bg-slate-50 text-slate-900">
       <div className="flex min-h-screen">
         <aside className="hidden w-72 shrink-0 border-r border-slate-200 bg-white lg:flex">
-          <AdminSidebar />
+          <Suspense
+            fallback={
+              <div className="flex h-full w-full flex-col gap-4 p-6">
+                <div className="h-10 w-32 rounded-xl bg-slate-100" />
+                <div className="space-y-2">
+                  {[...Array(6)].map((_, idx) => (
+                    <div key={idx} className="h-10 rounded-xl bg-slate-100" />
+                  ))}
+                </div>
+              </div>
+            }
+          >
+            <AdminSidebar />
+          </Suspense>
         </aside>
 
         <div className="flex flex-1 flex-col">

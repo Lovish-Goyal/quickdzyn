@@ -1,4 +1,4 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, Model, InferSchemaType } from "mongoose";
 
 const PricingSchema = new Schema(
   {
@@ -11,5 +11,8 @@ const PricingSchema = new Schema(
   { timestamps: true }
 );
 
-export const Pricing =
-  mongoose.models.Pricing || mongoose.model("Pricing", PricingSchema);
+type PricingType = InferSchemaType<typeof PricingSchema>;
+
+export const Pricing: Model<PricingType> =
+  (mongoose.models.Pricing as Model<PricingType>) ??
+  mongoose.model<PricingType>("Pricing", PricingSchema);

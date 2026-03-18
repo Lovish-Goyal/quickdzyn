@@ -1,4 +1,4 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, Model, InferSchemaType } from "mongoose";
 
 const ContentSchema = new Schema(
   {
@@ -9,5 +9,8 @@ const ContentSchema = new Schema(
   { timestamps: true }
 );
 
-export const Content =
-  mongoose.models.Content || mongoose.model("Content", ContentSchema);
+type ContentType = InferSchemaType<typeof ContentSchema>;
+
+export const Content: Model<ContentType> =
+  (mongoose.models.Content as Model<ContentType>) ??
+  mongoose.model<ContentType>("Content", ContentSchema);
