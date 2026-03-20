@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     url: absoluteUrl("/"),
   },
   twitter: {
-    title: "QuickDzyn — premium design marketplace",
+    title: "QuickDzyn â€” premium design marketplace",
     description:
       "UI kits, web templates, posters, banners, and social graphics ready to ship.",
   },
@@ -37,4 +37,4 @@ export default async function HomePage() {
       blogs={Array.isArray(blogs) ? blogs.slice(0, 6) : []}
     />
   );
-}
+}

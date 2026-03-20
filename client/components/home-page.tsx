@@ -57,7 +57,7 @@ const whyCards = [
   {
     icon: "??",
     title: "Multi-Format Files",
-    desc: "Figma, Sketch, Canva, PSD, AI — we support all major design tools.",
+    desc: "Figma, Sketch, Canva, PSD, AI â€” we support all major design tools.",
   },
   {
     icon: "??",
@@ -101,7 +101,7 @@ function Carousel({ children }: { children: React.ReactNode }) {
           onClick={() => scroll(-1)}
           className="absolute -left-3 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-slate-200 bg-white shadow-lg text-slate-700 opacity-0 group-hover/carousel:opacity-100 transition hover:bg-primary hover:text-white hover:border-primary"
         >
-          ‹
+          â€¹
         </button>
       )}
       <div
@@ -116,7 +116,7 @@ function Carousel({ children }: { children: React.ReactNode }) {
           onClick={() => scroll(1)}
           className="absolute -right-3 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-slate-200 bg-white shadow-lg text-slate-700 opacity-0 group-hover/carousel:opacity-100 transition hover:bg-primary hover:text-white hover:border-primary"
         >
-          ›
+          â€º
         </button>
       )}
     </div>
@@ -316,7 +316,7 @@ export default function HomePageClient({ designs: initialDesigns = [], blogs: in
         <div className="pointer-events-none absolute right-1/3 top-20 h-40 w-40 rounded-full bg-accent2/20 blur-[120px]" />
 
         <div className="mx-auto grid w-full max-w-[1400px] items-center gap-12 lg:grid-cols-[1.05fr_0.95fr]">
-          {/* Left — text content */}
+          {/* Left â€” text content */}
           <motion.div variants={stagger} initial="hidden" animate="show" className="space-y-6">
             <motion.p
               variants={stagger}
@@ -383,7 +383,7 @@ export default function HomePageClient({ designs: initialDesigns = [], blogs: in
             </div>
           </motion.div>
 
-          {/* Right — Auto-cycling showcase (replaces Featured Creator) */}
+          {/* Right â€” Auto-cycling showcase (replaces Featured Creator) */}
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
@@ -405,7 +405,7 @@ export default function HomePageClient({ designs: initialDesigns = [], blogs: in
               Everything you need to build faster
             </h2>
             <p className="mt-3 max-w-xl mx-auto text-slate-600">
-              From instant downloads to commercial licensing — we've built the marketplace around your creative workflow.
+              From instant downloads to commercial licensing â€” we've built the marketplace around your creative workflow.
             </p>
           </div>
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -563,7 +563,7 @@ export default function HomePageClient({ designs: initialDesigns = [], blogs: in
         </Section>
       )}
 
-      {/* --- CTA — Premium Clean Redesign ----------------------------------- */}
+      {/* --- CTA â€” Premium Clean Redesign ----------------------------------- */}
       <Section className="w-full px-6 py-16 lg:py-24 relative overflow-hidden bg-white">
         {/* Background Accents (Clean/White style) */}
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
@@ -573,7 +573,7 @@ export default function HomePageClient({ designs: initialDesigns = [], blogs: in
         <div className="mx-auto w-full max-w-[1400px]">
           <div className="grid gap-16 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
 
-            {/* Left — Clean text block */}
+            {/* Left â€” Clean text block */}
             <div className="relative z-10 space-y-8">
               <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 shadow-sm">
                 <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
@@ -613,7 +613,7 @@ export default function HomePageClient({ designs: initialDesigns = [], blogs: in
               </div>
             </div>
 
-            {/* Right — Minimal Stat Grid / Graphic */}
+            {/* Right â€” Minimal Stat Grid / Graphic */}
             <div className="relative z-10 lg:pl-10">
               <div className="grid gap-4 sm:grid-cols-2">
                 {[
@@ -645,4 +645,4 @@ export default function HomePageClient({ designs: initialDesigns = [], blogs: in
       </Section>
     </main>
   );
-}
+}
