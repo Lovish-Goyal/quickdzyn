@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
@@ -33,6 +33,13 @@ export default function DesignOrderModal({ title, price }: DesignOrderModalProps
       document.body.style.overflow = "unset";
     };
   }, [open]);
+
+  // Handle currency conversion
+  const formattedPrice = price ? (price.includes("₹") ? price : price.includes("$") ? price.replace("$", "₹") : `₹${price}`) : "₹0";
+
+  // Generate WhatsApp link
+  const message = `Hello QuickDzyn, I'd like to order the template: "${title}". Price: ${formattedPrice}. Please confirm my order.`;
+  const whatsappUrl = `https://wa.me/919999999999?text=${encodeURIComponent(message)}`;
 
   const modal = (
     <AnimatePresence>
@@ -85,16 +92,35 @@ export default function DesignOrderModal({ title, price }: DesignOrderModalProps
                   className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white/70 text-slate-700 transition hover:border-primary/50 hover:text-slate-900"
                   aria-label="Close"
                 >
-                  x
+                  ✕
                 </button>
               </div>
 
               <div className="relative mt-8 grid gap-6 lg:grid-cols-[240px_1fr] lg:items-start">
-                <div className="rounded-2xl border border-slate-200 bg-white/70 p-4">
-                  <div className="aspect-square rounded-2xl border border-dashed border-white/20 bg-white/70 p-4">
-                    <div className="flex h-full w-full items-center justify-center rounded-xl text-center text-xs font-semibold uppercase tracking-[0.35em] text-slate-500">
-                      QR Code
-                    </div>
+                <div className="rounded-2xl border border-slate-200 bg-white/70 p-4 flex flex-col items-center">
+                  <div className="aspect-square w-full max-w-[160px] overflow-hidden rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
+                    <svg viewBox="0 0 100 100" className="h-full w-full object-contain">
+                      <rect x="0" y="0" width="100" height="100" fill="white" />
+                      <rect x="10" y="10" width="30" height="30" fill="none" stroke="#0F172A" strokeWidth="6" />
+                      <rect x="18" y="18" width="14" height="14" fill="#0F172A" />
+                      <rect x="60" y="10" width="30" height="30" fill="none" stroke="#0F172A" strokeWidth="6" />
+                      <rect x="68" y="18" width="14" height="14" fill="#0F172A" />
+                      <rect x="10" y="60" width="30" height="30" fill="none" stroke="#0F172A" strokeWidth="6" />
+                      <rect x="18" y="68" width="14" height="14" fill="#0F172A" />
+                      <rect x="45" y="10" width="6" height="6" fill="#0F172A" />
+                      <rect x="50" y="22" width="6" height="6" fill="#0F172A" />
+                      <rect x="45" y="34" width="6" height="6" fill="#0F172A" />
+                      <rect x="10" y="45" width="6" height="6" fill="#0F172A" />
+                      <rect x="22" y="50" width="6" height="6" fill="#0F172A" />
+                      <rect x="34" y="45" width="6" height="6" fill="#0F172A" />
+                      <rect x="45" y="45" width="10" height="10" fill="#0F172A" />
+                      <rect x="60" y="45" width="6" height="12" fill="#0F172A" />
+                      <rect x="70" y="60" width="12" height="6" fill="#0F172A" />
+                      <rect x="45" y="65" width="8" height="8" fill="#0F172A" />
+                      <rect x="58" y="70" width="12" height="12" fill="#0F172A" />
+                      <rect x="75" y="75" width="15" height="15" fill="#0F172A" />
+                      <rect x="85" y="45" width="6" height="15" fill="#0F172A" />
+                    </svg>
                   </div>
                   <p className="mt-3 text-center text-xs font-semibold text-slate-600">
                     Scan to pay
@@ -107,7 +133,7 @@ export default function DesignOrderModal({ title, price }: DesignOrderModalProps
                       Amount
                     </p>
                     <p className="mt-2 text-lg font-semibold text-slate-900">
-                      {price}
+                      {formattedPrice}
                     </p>
                     <p className="mt-2 text-xs text-slate-500">
                       UPI ID: quickdzyn@upi
@@ -132,7 +158,9 @@ export default function DesignOrderModal({ title, price }: DesignOrderModalProps
                     <motion.a
                       whileHover={{ y: -2 }}
                       whileTap={{ scale: 0.98 }}
-                      href="https://wa.me/919999999999"
+                      href={whatsappUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="mt-3 inline-flex w-full items-center justify-center rounded-full border border-slate-200 bg-white/70 px-4 py-2 text-xs font-semibold text-slate-900 transition hover:border-accent/60 hover:text-slate-900 hover:shadow-[0_0_20px_rgba(34,197,94,0.35)] sm:w-auto"
                     >
                       Message on WhatsApp

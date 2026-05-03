@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
@@ -63,7 +63,7 @@ export default function PricingPage() {
                       </span>
                     ) : null}
                     <h2 className="text-xl font-semibold text-slate-900">{plan.name}</h2>
-                    <p className="mt-2 text-3xl font-semibold text-slate-900">{plan.price}</p>
+                    <p className="mt-2 text-3xl font-semibold text-slate-900">{plan.price ? (plan.price.includes("₹") ? plan.price : plan.price.includes("$") ? plan.price.replace("$", "₹") : `₹${plan.price}`) : "₹0"}</p>
                     <p className="mt-3 text-sm text-slate-600">{plan.description}</p>
                     <ul className="mt-6 space-y-3 text-sm text-slate-600">
                       {plan.features.map((feature: string) => (

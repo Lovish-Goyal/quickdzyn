@@ -12,13 +12,14 @@ async function fetchPost(slug: string) {
   return post as any;
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const post = await fetchPost(params.slug);
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const post = await fetchPost(slug);
   if (!post) {
     return {
       title: "Post not found",
       description: "The article you are looking for is unavailable.",
-      alternates: { canonical: absoluteUrl(`/blog/${params.slug}`) },
+      alternates: { canonical: absoluteUrl(`/blog/${slug}`) },
     };
   }
 
@@ -29,12 +30,12 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   return {
     title,
     description,
-    alternates: { canonical: absoluteUrl(`/blog/${params.slug}`) },
+    alternates: { canonical: absoluteUrl(`/blog/${slug}`) },
     openGraph: {
       type: "article",
       title,
       description,
-      url: absoluteUrl(`/blog/${params.slug}`),
+      url: absoluteUrl(`/blog/${slug}`),
       images: image ? [{ url: absoluteUrl(image) }] : undefined,
       publishedTime: post.date,
     },
@@ -47,8 +48,9 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   };
 }
 
-export default async function BlogPostPage({ params }: { params: { slug: string } }) {
-  const post = await fetchPost(params.slug);
+export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const post = await fetchPost(slug);
   if (!post) notFound();
   return <BlogPostClient post={post} />;
 }

@@ -3,15 +3,7 @@
 import Link from "next/link";
 import { Facebook, Instagram, Linkedin, Twitter } from "lucide-react";
 
-const footerLinks = [
-  { href: "/", label: "Home" },
-  { href: "/about", label: "About Us" },
-  { href: "/contact", label: "Contacts" },
-  { href: "/terms", label: "Terms & Conditions" },
-  { href: "/designs", label: "Services" },
-  { href: "/designs", label: "Features" },
-  { href: "/privacy", label: "Privacy Policy" },
-];
+
 
 export default function Footer() {
   return (
@@ -37,9 +29,9 @@ export default function Footer() {
                 <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/80">Office</p>
                 <span className="block h-1 w-12 rounded-full bg-white/90" />
               </div>
-              <div className="space-y-2 text-sm text-white/85">
-                <p>ITPL Road<br />Whitefield, Bangalore<br />Karnataka, PIN 560066, India</p>
-                <p className="pt-2">hello@quickdzyn.com</p>
+              <div className="text-sm text-white/85 leading-tight space-y-1.5">
+                <p>Ambala Cantt,<br />Haryana,<br />PIN 133001, India</p>
+                <p className="text-white/90 pt-1">hello@quickdzyn.com</p>
                 <p className="font-semibold text-white">+91 - 0123456789</p>
               </div>
             </div>
@@ -49,16 +41,38 @@ export default function Footer() {
                 <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/80">Links</p>
                 <span className="block h-1 w-12 rounded-full bg-white/90" />
               </div>
-              <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm text-white">
-                {footerLinks.map((link) => (
-                  <Link
-                    key={link.label}
-                    href={link.href}
-                    className="block font-medium text-white transition hover:text-white"
-                  >
-                    {link.label}
-                  </Link>
-                ))}
+              <div className="flex gap-x-8 text-sm text-white">
+                <div className="space-y-2.5 flex-1">
+                  {[
+                    { href: "/", label: "Home" },
+                    { href: "/contact", label: "Contacts" },
+                    { href: "/designs", label: "Services" },
+                    { href: "/privacy", label: "Privacy Policy" },
+                  ].map((link) => (
+                    <Link
+                      key={link.label}
+                      href={link.href}
+                      className="block font-medium text-white/90 transition hover:text-white whitespace-nowrap"
+                    >
+                      {link.label}
+                    </Link>
+                  ))}
+                </div>
+                <div className="space-y-2.5 flex-1">
+                  {[
+                    { href: "/about", label: "About Us" },
+                    { href: "/terms", label: "Terms & Conditions" },
+                    { href: "/designs", label: "Features" },
+                  ].map((link) => (
+                    <Link
+                      key={link.label}
+                      href={link.href}
+                      className="block font-medium text-white/90 transition hover:text-white whitespace-nowrap"
+                    >
+                      {link.label}
+                    </Link>
+                  ))}
+                </div>
               </div>
             </div>
 

@@ -24,8 +24,8 @@ const contactInfo = [
       </svg>
     ),
     label: "Call Us",
-    value: "+1 (555) 123-4567",
-    sub: "Mon – Fri, 9am – 6pm EST",
+    value: "+91 - 0123456789",
+    sub: "Mon – Fri, 9am – 6pm IST",
     iconBg: "bg-violet-500/10 text-violet-500",
   },
   {
@@ -37,7 +37,7 @@ const contactInfo = [
     ),
     label: "Visit Us",
     value: "QuickDzyn Studio",
-    sub: "The Courtyard, Al Quoz 1, Colorado, USA",
+    sub: "Ambala Cantt, Haryana, PIN 133001, India",
     iconBg: "bg-emerald-500/10 text-emerald-600",
   },
 ];

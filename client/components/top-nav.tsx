@@ -11,7 +11,7 @@ export const siteNavLinks = [
   { href: "/category/posters", label: "Posters" },
   { href: "/category/banners", label: "Banners" },
   { href: "/category/templates", label: "Web & Presentations" },
-  { href: "/blog", label: "Insights" },
+  { href: "/blog", label: "Blogs" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Support" },
 ];

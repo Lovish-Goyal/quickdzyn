@@ -152,7 +152,7 @@ export default function CategoryPage() {
                                         <div className="flex flex-1 flex-col gap-3 p-5 bg-white relative">
                                             <div className="flex items-start justify-between gap-3">
                                                 <h2 className="text-[16px] font-semibold text-slate-900 line-clamp-1">{template.title}</h2>
-                                                <span className="text-sm font-bold text-primary shrink-0">{template.price}</span>
+                                                <span className="text-sm font-bold text-primary shrink-0">{template.price ? (template.price.includes("₹") ? template.price : template.price.includes("$") ? template.price.replace("$", "₹") : `₹${template.price}`) : "₹0"}</span>
                                             </div>
                                             <p className="text-sm text-slate-500 line-clamp-2">
                                                 {template.description}

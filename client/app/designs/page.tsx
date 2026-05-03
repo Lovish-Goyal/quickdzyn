@@ -126,13 +126,13 @@ export default function DesignsPage() {
             initial="hidden"
             whileInView="show"
             viewport={{ once: true, amount: 0.2 }}
-            className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
+            className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3"
           >
             {loading ? (
               Array.from({ length: 6 }).map((_, index) => (
                 <div
                   key={index}
-                  className="h-[320px] animate-pulse rounded-3xl border border-slate-200 bg-white/90"
+                  className="h-[320px] animate-pulse rounded-3xl border border-slate-200 bg-white"
                 />
               ))
             ) : (
@@ -141,31 +141,51 @@ export default function DesignsPage() {
                   key={template._id || template.slug || template.title}
                   variants={gridVariants}
                   whileHover={{ y: -6 }}
-                  className="group flex h-full flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-[0_8px_30px_rgba(15,23,42,0.06)] hover:shadow-[0_16px_48px_rgba(15,23,42,0.12)] transition-shadow"
+                  className="group flex h-full flex-col overflow-hidden rounded-[24px] border border-slate-200 bg-white shadow-[0_4px_25px_rgba(0,0,0,0.05)] hover:shadow-[0_12px_35px_rgba(0,0,0,0.1)] transition-all relative"
                 >
                   <Link href={`/designs/${template.slug || template._id}`} className="flex h-full flex-col">
-                    <div className="aspect-[4/3] overflow-hidden bg-slate-100 relative">
+                    <div className="aspect-[4/3] overflow-hidden bg-slate-50 relative p-4">
+                      {/* Rating Badge */}
+                      <div className="absolute top-4 left-4 z-20 flex items-center gap-1 rounded-full bg-white/95 px-2.5 py-1 text-[11px] font-bold text-slate-900 shadow-md backdrop-blur-sm">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="#FFC700" stroke="#FFC700"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+                        4.8
+                      </div>
+                      
+                      {/* Favorite Button */}
+                      <button 
+                        type="button"
+                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                        className="absolute top-4 right-4 z-20 flex h-8 w-8 items-center justify-center rounded-full bg-white/95 text-slate-600 shadow-md backdrop-blur-sm hover:text-red-500 hover:scale-110 transition duration-200"
+                      >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" /></svg>
+                      </button>
+
                       <img
                         src={template.images?.[0] || template.image}
                         alt={template.title}
-                        className="h-full w-full object-contain bg-slate-50 transition-transform duration-500 ease-out group-hover:scale-110"
+                        className="h-full w-full object-contain bg-white transition-transform duration-500 ease-out group-hover:scale-105 rounded-xl"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-slate-900/70 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100 flex items-end p-5">
-                        <span className="rounded-full bg-primary px-4 py-2 text-xs font-semibold text-white shadow-lg">
-                          Preview
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100 flex items-end p-5">
+                        <span className="rounded-full bg-primary px-5 py-2 text-xs font-semibold text-white shadow-lg backdrop-blur-sm">
+                          Preview Details
                         </span>
                       </div>
                     </div>
-                    <div className="flex flex-1 flex-col gap-3 p-5 bg-white relative">
-                      <div className="flex items-start justify-between gap-3">
-                        <h2 className="text-[16px] font-semibold text-slate-900 line-clamp-1">{template.title}</h2>
-                        <span className="text-sm font-bold text-primary shrink-0">{template.price}</span>
+                    <div className="flex flex-1 flex-col justify-between p-6 bg-white relative">
+                      <div className="space-y-2">
+                        <div className="flex items-start justify-between gap-3">
+                          <h2 className="text-[17px] font-bold text-slate-900 line-clamp-1 group-hover:text-primary transition-colors">{template.title}</h2>
+                          <span className="text-sm font-extrabold text-primary shrink-0">{template.price ? (template.price.includes("₹") ? template.price : template.price.includes("$") ? template.price.replace("$", "₹") : `₹${template.price}`) : "₹0"}</span>
+                        </div>
+                        <p className="text-sm text-slate-500 line-clamp-2 leading-relaxed">
+                          {template.description || "Includes editable layers, export-ready assets, and brand-safe typography."}
+                        </p>
                       </div>
-                      <p className="text-sm text-slate-500 line-clamp-2">
-                        {template.description || "Includes editable layers, export-ready assets, and brand-safe typography."}
-                      </p>
-                      <div className="mt-auto flex items-center gap-2 pt-2">
-                        <span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-primary">
+                      <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-3">
+                        <span className="text-xs font-semibold text-slate-400">
+                          {template.images?.length || 1} files included
+                        </span>
+                        <span className="rounded-full bg-primary/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-primary">
                           {(template.categories || [])[0] || "Design"}
                         </span>
                       </div>

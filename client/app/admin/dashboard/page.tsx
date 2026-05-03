@@ -114,6 +114,7 @@ function AdminDashboard() {
   });
   const [blogEditingId, setBlogEditingId] = useState<string | null>(null);
   const [blogErrors, setBlogErrors] = useState<Record<string, string>>({});
+  const [blogModalOpen, setBlogModalOpen] = useState(false);
 
   const [pricingForm, setPricingForm] = useState<any>({
     name: "",
@@ -247,13 +248,39 @@ function AdminDashboard() {
     try {
       const fileArray = Array.from(files);
       const { urls } = await uploadFiles(fileArray as File[]);
-      setDesignForm((prev: any) => ({
-        ...prev,
-        images: [...(prev.images || []), ...urls],
-        image: prev.image || urls[0],
-      }));
+      const isFigmaUIKits = ["Figma", "UI Kits"].includes(designForm.category);
+      if (isFigmaUIKits) {
+        setDesignForm((prev: any) => ({
+          ...prev,
+          images: [...(prev.images || []), ...urls],
+          image: prev.image || urls[0],
+        }));
+      } else {
+        setDesignForm((prev: any) => ({
+          ...prev,
+          images: [urls[0]],
+          image: urls[0],
+        }));
+      }
     } catch {
       // ignore upload failures for now
+    }
+  }
+
+  async function handleBlogImageFilesChange(files: FileList | null) {
+    if (!files || files.length === 0) return;
+    try {
+      const fileArray = Array.from(files);
+      const { urls } = await uploadFiles(fileArray as File[]);
+      if (urls && urls.length > 0) {
+        setBlogForm((prev: any) => ({
+          ...prev,
+          image: urls[0],
+        }));
+        setBlogErrors((prev) => ({ ...prev, image: "" }));
+      }
+    } catch {
+      // ignore upload failures
     }
   }
 
@@ -303,6 +330,7 @@ function AdminDashboard() {
     const data = await adminRequest<any[]>("/api/blogs", token);
     setBlogs(data);
     showToast("Insight saved", "success");
+    setBlogModalOpen(false);
   }
 
   async function handlePricingSubmit() {
@@ -440,7 +468,7 @@ function AdminDashboard() {
             <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {[
                 { label: "Designs", value: designs.length },
-                { label: "Insights", value: blogs.length },
+                { label: "Blogs", value: blogs.length },
                 { label: "Plans", value: pricing.length },
                 { label: "Content Blocks", value: content.length },
               ].map((item) => (
@@ -631,111 +659,22 @@ function AdminDashboard() {
               </div>
             </section>
 
-            <section style={{ display: activeSection === "insights" ? "block" : "none" }} className={sectionClass}>
-              <h2 className="text-xl font-semibold text-slate-900">Insights</h2>
-              <div className="mt-4 grid gap-4 md:grid-cols-2">
-                <div className="space-y-1">
-                  <input
-                    placeholder="Title"
-                    value={blogForm.title}
-                    onChange={(event) => {
-                      setBlogForm({ ...blogForm, title: event.target.value });
-                      setBlogErrors((prev) => ({ ...prev, title: "" }));
-                    }}
-                    className={`rounded-2xl border px-4 py-2 text-sm bg-white outline-none transition ${blogErrors.title ? "border-red-300" : "border-slate-200"
-                      }`}
-                  />
-                  {blogErrors.title ? (
-                    <p className="text-xs text-red-500">{blogErrors.title}</p>
-                  ) : null}
-                </div>
-                <div className="space-y-1">
-                  <input
-                    placeholder="Slug"
-                    value={blogForm.slug}
-                    onChange={(event) => {
-                      setBlogForm({ ...blogForm, slug: event.target.value });
-                      setBlogErrors((prev) => ({ ...prev, slug: "" }));
-                    }}
-                    className={`rounded-2xl border px-4 py-2 text-sm bg-white outline-none transition ${blogErrors.slug ? "border-red-300" : "border-slate-200"
-                      }`}
-                  />
-                  {blogErrors.slug ? (
-                    <p className="text-xs text-red-500">{blogErrors.slug}</p>
-                  ) : null}
-                </div>
-                <div className="space-y-1">
-                  <input
-                    placeholder="Date"
-                    value={blogForm.date}
-                    onChange={(event) => {
-                      setBlogForm({ ...blogForm, date: event.target.value });
-                      setBlogErrors((prev) => ({ ...prev, date: "" }));
-                    }}
-                    className={`rounded-2xl border px-4 py-2 text-sm bg-white outline-none transition ${blogErrors.date ? "border-red-300" : "border-slate-200"
-                      }`}
-                  />
-                  {blogErrors.date ? (
-                    <p className="text-xs text-red-500">{blogErrors.date}</p>
-                  ) : null}
-                </div>
-                <div className="space-y-1">
-                  <input
-                    placeholder="Image URL"
-                    value={blogForm.image}
-                    onChange={(event) => {
-                      setBlogForm({ ...blogForm, image: event.target.value });
-                      setBlogErrors((prev) => ({ ...prev, image: "" }));
-                    }}
-                    className={`rounded-2xl border px-4 py-2 text-sm bg-white outline-none transition ${blogErrors.image ? "border-red-300" : "border-slate-200"
-                      }`}
-                  />
-                  {blogErrors.image ? (
-                    <p className="text-xs text-red-500">{blogErrors.image}</p>
-                  ) : null}
-                </div>
-                <div className="space-y-1 md:col-span-2">
-                  <textarea
-                    placeholder="Summary"
-                    value={blogForm.summary}
-                    onChange={(event) => {
-                      setBlogForm({ ...blogForm, summary: event.target.value });
-                      setBlogErrors((prev) => ({ ...prev, summary: "" }));
-                    }}
-                    className={`rounded-2xl border px-4 py-2 text-sm bg-white outline-none transition ${blogErrors.summary ? "border-red-300" : "border-slate-200"
-                      }`}
-                  />
-                  {blogErrors.summary ? (
-                    <p className="text-xs text-red-500">{blogErrors.summary}</p>
-                  ) : null}
-                </div>
-                <div className="space-y-1 md:col-span-2">
-                  <textarea
-                    placeholder="Content JSON (array of blocks)"
-                    value={blogForm.content}
-                    onChange={(event) => {
-                      setBlogForm({ ...blogForm, content: event.target.value });
-                      setBlogErrors((prev) => ({ ...prev, content: "" }));
-                    }}
-                    className={`rounded-2xl border px-4 py-2 text-sm bg-white outline-none transition ${blogErrors.content ? "border-red-300" : "border-slate-200"
-                      }`}
-                    rows={6}
-                  />
-                  {blogErrors.content ? (
-                    <p className="text-xs text-red-500">{blogErrors.content}</p>
-                  ) : null}
-                </div>
-              </div>
-              <div className="mt-4 flex flex-wrap gap-3">
-                <button
-                  onClick={handleBlogSubmit}
-                  className="rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white"
-                >
-                  {blogEditingId ? "Update Blog" : "Create Blog"}
-                </button>
-                {blogEditingId ? (
+            <section
+              style={{ display: activeSection === "insights" ? "block" : "none" }}
+              className=""
+            >
+              <div className="flex flex-col gap-3">
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                  <div>
+                    <h2 className="text-[28px] font-bold tracking-tight text-slate-900">Manage Blogs</h2>
+                    <p className="mt-1 text-[15px] font-medium text-slate-500">
+                      Add and manage blog articles across the store
+                    </p>
+                  </div>
+
                   <button
                     onClick={() => {
+                      setBlogModalOpen(true);
                       setBlogEditingId(null);
                       setBlogForm({
                         title: "",
@@ -746,53 +685,75 @@ function AdminDashboard() {
                         content: "[]",
                       });
                     }}
-                    className="rounded-full border border-slate-200 px-4 py-2 text-sm"
+                    className="flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-[14px] font-semibold text-white shadow-sm hover:bg-primary/90 transition"
                   >
-                    Cancel
+                    <Plus className="h-4 w-4" />
+                    <span>Create Blog</span>
                   </button>
-                ) : null}
-              </div>
-              <div className="mt-6 grid gap-4 md:grid-cols-2">
-                {blogs.map((item) => (
-                  <div
-                    key={item._id}
-                    className="group flex flex-col justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-lg"
-                  >
-                    <div>
-                      <p className="text-sm font-semibold text-slate-900">{item.title}</p>
-                      <p className="text-xs text-slate-500">{item.slug}</p>
-                      {item.date ? (
-                        <p className="mt-1 text-xs text-slate-500">{item.date}</p>
-                      ) : null}
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      <button
-                        onClick={() => {
-                          setBlogEditingId(item._id);
-                          setBlogForm({
-                            title: item.title,
-                            slug: item.slug,
-                            summary: item.summary,
-                            image: item.image,
-                            date: item.date,
-                            content: JSON.stringify(item.content || [], null, 2),
-                          });
-                        }}
-                        className="rounded-full border border-slate-200 px-3 py-1 text-xs"
+                </div>
+
+                <div className="mt-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                  {blogs.map((item) => {
+                    return (
+                      <div
+                        key={item._id}
+                        className="group flex flex-col overflow-hidden rounded-[24px] bg-white border border-slate-100 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] transition hover:shadow-[0_8px_30px_-4px_rgba(0,0,0,0.1)]"
                       >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() =>
-                          setDeleteTarget({ type: "blog", id: item._id, label: item.title })
-                        }
-                        className="rounded-full border border-red-200 px-3 py-1 text-xs text-red-600"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </div>
-                ))}
+                        <div className="relative h-[200px] w-full bg-slate-50 p-2">
+                          {item.image ? (
+                            <img
+                              src={item.image}
+                              alt={item.title}
+                              className="h-full w-full object-cover rounded-[18px]"
+                            />
+                          ) : null}
+                        </div>
+
+                        <div className="flex flex-1 flex-col p-6">
+                          <h3 className="text-[17px] font-bold leading-snug text-slate-900">
+                            {item.title}
+                          </h3>
+                          <p className="mt-2 text-[14px] leading-relaxed text-slate-500 line-clamp-2">
+                            {item.summary || "No summary provided."}
+                          </p>
+
+                          <div className="mt-auto pt-6 flex items-center justify-between border-t border-slate-50 mt-4">
+                            <span className="text-xs font-medium text-slate-400">
+                              {item.date}
+                            </span>
+                            <div className="flex items-center gap-2">
+                              <button
+                                onClick={() => {
+                                  setBlogModalOpen(true);
+                                  setBlogEditingId(item._id);
+                                  setBlogForm({
+                                    title: item.title,
+                                    slug: item.slug,
+                                    summary: item.summary,
+                                    image: item.image,
+                                    date: item.date,
+                                    content: typeof item.content === "string" ? item.content : JSON.stringify(item.content || [], null, 2),
+                                  });
+                                }}
+                                className="flex h-9 w-9 items-center justify-center rounded-[10px] bg-slate-50 text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 border border-transparent hover:border-slate-200"
+                              >
+                                <Edit2 className="h-4 w-4" />
+                              </button>
+                              <button
+                                onClick={() =>
+                                  setDeleteTarget({ type: "blog", id: item._id, label: item.title })
+                                }
+                                className="flex h-9 w-9 items-center justify-center rounded-[10px] bg-slate-50 text-slate-500 transition hover:bg-red-50 hover:text-red-600 border border-transparent hover:border-red-100"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             </section>
 
@@ -1121,9 +1082,15 @@ function AdminDashboard() {
                     <label className="text-xs font-semibold text-slate-600">Category</label>
                     <select
                       value={designForm.category}
-                      onChange={(event) =>
-                        setDesignForm((prev: any) => ({ ...prev, category: event.target.value }))
-                      }
+                      onChange={(event) => {
+                        const newCat = event.target.value;
+                        const isFigmaUIKits = ["Figma", "UI Kits"].includes(newCat);
+                        setDesignForm((prev: any) => ({
+                          ...prev,
+                          category: newCat,
+                          images: isFigmaUIKits ? prev.images : (prev.images && prev.images.length > 0 ? [prev.images[0]] : prev.image ? [prev.image] : [])
+                        }));
+                      }}
                       className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm bg-white outline-none transition focus:border-primary/60"
                     >
                       <option value="">Select category</option>
@@ -1172,10 +1139,40 @@ function AdminDashboard() {
 
                 <div className="space-y-5 rounded-2xl border border-slate-200 bg-slate-50 p-5 lg:col-span-5">
                   <div>
-                    <p className="text-sm font-semibold text-slate-800">Preview Images</p>
-                    <p className="text-xs text-slate-500 mt-1">Upload up to 5 images (PNG, JPG, GIF).</p>
+                    <p className="text-sm font-semibold text-slate-800">
+                      {["Figma", "UI Kits"].includes(designForm.category)
+                        ? "Preview Images (Multiple Pages)"
+                        : "Preview Image (Single Page)"}
+                    </p>
+                    <p className="text-xs text-slate-500 mt-1">
+                      {["Figma", "UI Kits"].includes(designForm.category)
+                        ? "Figma UI Kits contain multiple pages/images."
+                        : "Posters, banners, web & presentations contain only a single page/image."}
+                    </p>
                   </div>
 
+                  {/* Manual URL Input */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-slate-600">
+                      Image URL {!["Figma", "UI Kits"].includes(designForm.category) && <span className="text-red-500">*</span>}
+                    </label>
+                    <input
+                      placeholder="e.g., https://example.com/preview.png"
+                      value={designForm.image || ""}
+                      onChange={(event) => {
+                        const val = event.target.value;
+                        const isFigmaUIKits = ["Figma", "UI Kits"].includes(designForm.category);
+                        setDesignForm((prev: any) => ({
+                          ...prev,
+                          image: val,
+                          images: isFigmaUIKits ? (prev.images && prev.images.length ? prev.images : [val]) : [val]
+                        }));
+                      }}
+                      className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm outline-none transition focus:border-primary/60"
+                    />
+                  </div>
+
+                  {/* File Uploader */}
                   <label
                     htmlFor="design-images-modal"
                     className={`flex min-h-[120px] w-full cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed ${designErrors.image ? "border-red-300" : "border-slate-200"
@@ -1189,7 +1186,7 @@ function AdminDashboard() {
                     <input
                       id="design-images-modal"
                       type="file"
-                      multiple
+                      multiple={["Figma", "UI Kits"].includes(designForm.category)}
                       accept="image/*"
                       onChange={(event) => handleImageFilesChange(event.target.files)}
                       className="hidden"
@@ -1199,7 +1196,7 @@ function AdminDashboard() {
 
                   {designForm.images?.length ? (
                     <div className="grid grid-cols-3 gap-2">
-                      {designForm.images.map((url: string) => (
+                      {(["Figma", "UI Kits"].includes(designForm.category) ? designForm.images : designForm.images.slice(0, 1)).map((url: string) => (
                         <div key={url} className="relative overflow-hidden rounded-xl border border-slate-200 bg-white">
                           <img src={url} alt="upload" className="h-16 w-full object-cover" />
                           <button
@@ -1275,6 +1272,201 @@ function AdminDashboard() {
                   className="rounded-xl bg-primary px-6 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-primary/90 transition"
                 >
                   {designEditingId ? "Update Design" : "Publish Design"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Blog Create / Edit Modal Popup */}
+      {blogModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"
+            onClick={() => {
+              setBlogModalOpen(false);
+              setBlogEditingId(null);
+              setBlogErrors({});
+            }}
+          />
+          <div className="relative z-10 w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-[28px] bg-white shadow-2xl">
+            <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-100 bg-white px-8 py-5 rounded-t-[28px]">
+              <div>
+                <h3 className="text-[20px] font-bold text-slate-900">
+                  {blogEditingId ? "Edit Blog" : "Add New Blog"}
+                </h3>
+                <p className="text-[13px] text-slate-500 mt-0.5">
+                  Fill in the details to publish a new blog post.
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  setBlogModalOpen(false);
+                  setBlogEditingId(null);
+                  setBlogErrors({});
+                }}
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 transition"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="p-8">
+              <div className="grid gap-6 lg:grid-cols-12">
+                <div className="space-y-4 lg:col-span-7">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-slate-600">
+                      Blog Title <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      placeholder="e.g. The Future of Design Systems"
+                      value={blogForm.title}
+                      onChange={(event) => {
+                        setBlogForm({ ...blogForm, title: event.target.value });
+                        setBlogErrors((prev) => ({ ...prev, title: "" }));
+                      }}
+                      className={`w-full rounded-xl border px-4 py-2.5 text-sm bg-white outline-none transition focus:border-primary/60 focus:ring-2 focus:ring-primary/10 ${
+                        blogErrors.title ? "border-red-300" : "border-slate-200"
+                      }`}
+                    />
+                    {blogErrors.title && <p className="text-xs text-red-500">{blogErrors.title}</p>}
+                  </div>
+
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-semibold text-slate-600">
+                        URL Slug <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        placeholder="e.g. design-systems-future"
+                        value={blogForm.slug}
+                        onChange={(event) => {
+                          setBlogForm({ ...blogForm, slug: event.target.value });
+                          setBlogErrors((prev) => ({ ...prev, slug: "" }));
+                        }}
+                        className={`w-full rounded-xl border px-4 py-2.5 text-sm bg-white outline-none transition focus:border-primary/60 focus:ring-2 focus:ring-primary/10 ${
+                          blogErrors.slug ? "border-red-300" : "border-slate-200"
+                        }`}
+                      />
+                      {blogErrors.slug && <p className="text-xs text-red-500">{blogErrors.slug}</p>}
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-semibold text-slate-600">
+                        Date <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        placeholder="e.g. May 3, 2026"
+                        value={blogForm.date}
+                        onChange={(event) => {
+                          setBlogForm({ ...blogForm, date: event.target.value });
+                          setBlogErrors((prev) => ({ ...prev, date: "" }));
+                        }}
+                        className={`w-full rounded-xl border px-4 py-2.5 text-sm bg-white outline-none transition focus:border-primary/60 focus:ring-2 focus:ring-primary/10 ${
+                          blogErrors.date ? "border-red-300" : "border-slate-200"
+                        }`}
+                      />
+                      {blogErrors.date && <p className="text-xs text-red-500">{blogErrors.date}</p>}
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-slate-600">
+                      Summary <span className="text-red-500">*</span>
+                    </label>
+                    <textarea
+                      placeholder="Brief overview of the article..."
+                      value={blogForm.summary}
+                      onChange={(event) => {
+                        setBlogForm({ ...blogForm, summary: event.target.value });
+                        setBlogErrors((prev) => ({ ...prev, summary: "" }));
+                      }}
+                      className={`w-full rounded-xl border px-4 py-2.5 text-sm bg-white outline-none transition focus:border-primary/60 focus:ring-2 focus:ring-primary/10 ${
+                        blogErrors.summary ? "border-red-300" : "border-slate-200"
+                      }`}
+                      rows={3}
+                    />
+                    {blogErrors.summary && <p className="text-xs text-red-500">{blogErrors.summary}</p>}
+                  </div>
+                </div>
+
+                <div className="space-y-5 rounded-2xl border border-slate-200 bg-slate-50 p-5 lg:col-span-5">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-slate-600">
+                      Featured Image URL <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      placeholder="e.g. https://images.unsplash.com/photo..."
+                      value={blogForm.image || ""}
+                      onChange={(event) => {
+                        setBlogForm({ ...blogForm, image: event.target.value });
+                        setBlogErrors((prev) => ({ ...prev, image: "" }));
+                      }}
+                      className={`w-full rounded-xl border px-4 py-2.5 text-sm bg-white outline-none transition focus:border-primary/60 ${
+                        blogErrors.image ? "border-red-300" : "border-slate-200"
+                      }`}
+                    />
+                    {blogErrors.image && <p className="text-xs text-red-500">{blogErrors.image}</p>}
+                  </div>
+
+                  {/* File Uploader */}
+                  <label
+                    htmlFor="blog-images-modal"
+                    className={`flex min-h-[120px] w-full cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed ${
+                      blogErrors.image ? "border-red-300" : "border-slate-200"
+                    } bg-white p-4 text-center transition hover:border-primary/40`}
+                  >
+                    <div className="flex flex-col items-center gap-1.5">
+                      <span className="text-2xl">📷</span>
+                      <span className="text-sm font-semibold text-slate-700">Click to upload</span>
+                      <span className="text-xs text-slate-400">SVG, PNG, JPG or GIF</span>
+                    </div>
+                    <input
+                      id="blog-images-modal"
+                      type="file"
+                      accept="image/*"
+                      onChange={(event) => handleBlogImageFilesChange(event.target.files)}
+                      className="hidden"
+                    />
+                  </label>
+
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-slate-600">
+                      Content Blocks JSON <span className="text-red-500">*</span>
+                    </label>
+                    <textarea
+                      placeholder={'[\n  { "type": "paragraph", "text": "Hello world" }\n]'}
+                      value={blogForm.content}
+                      onChange={(event) => {
+                        setBlogForm({ ...blogForm, content: event.target.value });
+                        setBlogErrors((prev) => ({ ...prev, content: "" }));
+                      }}
+                      className={`w-full rounded-xl border px-4 py-2.5 text-sm bg-white outline-none transition focus:border-primary/60 focus:ring-2 focus:ring-primary/10 ${
+                        blogErrors.content ? "border-red-300" : "border-slate-200"
+                      }`}
+                      rows={5}
+                    />
+                    {blogErrors.content && <p className="text-xs text-red-500">{blogErrors.content}</p>}
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-6 flex gap-3 justify-end">
+                <button
+                  onClick={() => {
+                    setBlogModalOpen(false);
+                    setBlogEditingId(null);
+                    setBlogErrors({});
+                  }}
+                  className="rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleBlogSubmit}
+                  className="rounded-xl bg-primary px-6 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-primary/90 transition"
+                >
+                  {blogEditingId ? "Update Blog" : "Publish Blog"}
                 </button>
               </div>
             </div>

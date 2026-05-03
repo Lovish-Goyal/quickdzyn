@@ -128,55 +128,89 @@ function DesignCard({ design }: { design: any }) {
   const imgs = design.images?.length > 0 ? design.images : [design.image];
   const hasMulti = imgs.length > 1;
 
+  const formattedPrice = design.price ? (design.price.includes("₹") ? design.price : design.price.includes("$") ? design.price.replace("$", "₹") : `₹${design.price}`) : "₹0";
+
   return (
     <motion.div
-      whileHover={{ y: -6 }}
-      className="min-w-[280px] max-w-[320px] flex-shrink-0 rounded-3xl border border-slate-200 bg-white shadow-md relative group cursor-pointer overflow-hidden"
+      whileHover={{ y: -10, scale: 1.02 }}
+      transition={{ duration: 0.4, ease: [0.25, 1, 0.5, 1] }}
+      className="min-w-[310px] max-w-[330px] flex-shrink-0 rounded-[28px] border border-slate-100 bg-white shadow-[0_12px_36px_rgba(15,23,42,0.03)] relative group cursor-pointer overflow-hidden transition-all duration-300 hover:shadow-[0_24px_48px_rgba(15,23,42,0.1)]"
     >
-      <Link href={`/designs/${design.slug || design._id}`}>
-        <div className="aspect-[4/3] overflow-hidden bg-slate-100 relative">
+      <Link href={`/designs/${design.slug || design._id}`} className="block">
+        <div className="aspect-[4/3] overflow-hidden bg-slate-50 relative">
           <img
             src={imgs[0]}
             alt={design.title}
-            className="h-full w-full object-contain bg-slate-50 transition duration-500 group-hover:scale-110"
+            className="h-full w-full object-contain bg-slate-50/60 transition duration-700 group-hover:scale-105"
           />
-          {/* Stacked mini-thumbnails in corner */}
+
+          {/* Premium tag overlay */}
+          <div className="absolute top-4 left-4 flex gap-1.5 z-10">
+            <span className="backdrop-blur-md bg-white/70 px-3 py-1 rounded-full text-[10px] font-extrabold text-slate-800 uppercase tracking-widest border border-white/40 shadow-sm flex items-center gap-1">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              {design.views >= 50 ? "Trending" : "Hot Asset"}
+            </span>
+            {design.visible !== false && (
+              <span className="backdrop-blur-md bg-white/70 px-3 py-1 rounded-full text-[10px] font-extrabold text-slate-800 uppercase tracking-widest border border-white/40 shadow-sm flex items-center gap-1">
+                ⭐ 4.9
+              </span>
+            )}
+          </div>
+
+          {/* Premium stacked small thumbnails on top-right */}
           {hasMulti && (
-            <div className="absolute top-3 right-3 flex -space-x-3">
+            <div className="absolute top-4 right-4 flex -space-x-3.5 backdrop-blur-sm bg-white/30 p-1 rounded-xl border border-white/50 shadow-sm transition group-hover:scale-105 z-10">
               {imgs.slice(0, 3).map((img: string, i: number) => (
                 <div
                   key={i}
-                  className="h-8 w-8 rounded-lg border-2 border-white overflow-hidden shadow-sm"
+                  className="h-7 w-7 rounded-lg border-2 border-white overflow-hidden shadow-sm"
                   style={{ zIndex: 10 - i }}
                 >
-                  <img src={img} alt="" className="h-full w-full object-contain bg-slate-50" />
+                  <img src={img} alt="" className="h-full w-full object-cover bg-slate-50" />
                 </div>
               ))}
               {imgs.length > 3 && (
-                <div className="h-8 w-8 rounded-lg border-2 border-white bg-slate-900/80 flex items-center justify-center shadow-sm" style={{ zIndex: 7 }}>
-                  <span className="text-[10px] font-bold text-white">+{imgs.length - 3}</span>
+                <div className="h-7 w-7 rounded-lg border-2 border-white bg-slate-900 flex items-center justify-center shadow-sm" style={{ zIndex: 7 }}>
+                  <span className="text-[9px] font-extrabold text-white">+{imgs.length - 3}</span>
                 </div>
               )}
             </div>
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-900/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
-            <span className="text-white font-medium text-sm px-4 py-2 bg-primary rounded-full shadow-lg">
-              Preview
+
+          {/* Hover Overlay with Preview Badge */}
+          <div className="absolute inset-0 bg-slate-900/30 backdrop-blur-[3px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-20">
+            <span className="flex items-center gap-1.5 text-white font-bold text-xs px-5 py-2.5 bg-slate-900/90 rounded-full shadow-xl border border-white/15 hover:bg-primary transition-all scale-95 group-hover:scale-100 duration-300">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></svg>
+              Quick Preview
             </span>
           </div>
         </div>
-        <div className="p-5">
-          <h3 className="text-[15px] font-semibold text-slate-900 line-clamp-1">{design.title}</h3>
-          <div className="mt-2 flex items-center justify-between">
-            <span className="text-sm font-bold text-primary">{design.price}</span>
-            <div className="flex items-center gap-1.5">
-              {hasMulti && (
-                <span className="text-[10px] font-bold text-slate-400">{imgs.length} files</span>
-              )}
-              <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-primary">
-                {(design.categories || [])[0] || "Design"}
+
+        <div className="p-6 flex flex-col justify-between min-h-[145px]">
+          <div>
+            <div className="flex items-center justify-between">
+              <span className="rounded-full bg-slate-50 px-3.5 py-1 text-[10px] font-extrabold uppercase tracking-widest text-slate-600 border border-slate-100 group-hover:bg-primary/5 group-hover:text-primary group-hover:border-primary/10 transition duration-300">
+                {(design.categories || [])[0] || "Premium Asset"}
+              </span>
+              <span className="text-[11px] font-bold text-slate-400">
+                ⭐ 4.8 (112 sales)
               </span>
             </div>
+            <h3 className="text-[17px] font-bold text-slate-900 line-clamp-1 mt-3.5 group-hover:text-primary transition duration-300">
+              {design.title}
+            </h3>
+            <p className="text-xs font-medium text-slate-400 mt-1.5 line-clamp-1">
+              {design.description || "Production-ready, customizable design vectors & source assets."}
+            </p>
+          </div>
+
+          <div className="mt-4 flex items-center justify-between border-t border-slate-50 pt-3.5">
+            <span className="text-[20px] font-black tracking-tight text-slate-900 group-hover:text-primary transition duration-300">
+              {formattedPrice}
+            </span>
+            <span className="text-[11px] font-bold text-primary bg-primary/5 px-3 py-1.5 rounded-xl border border-primary/5 group-hover:bg-primary group-hover:text-white transition duration-300">
+              Buy Now
+            </span>
           </div>
         </div>
       </Link>
@@ -241,11 +275,10 @@ function HeroShowcase({ designs }: { designs: any[] }) {
           <button
             key={item._id || i}
             onClick={() => setActive(i)}
-            className={`relative flex-1 h-14 rounded-xl overflow-hidden border-2 transition-all ${
-              i === active
-                ? "border-primary shadow-[0_0_12px_rgba(99,91,255,0.3)]"
-                : "border-transparent opacity-60 hover:opacity-100"
-            }`}
+            className={`relative flex-1 h-14 rounded-xl overflow-hidden border-2 transition-all ${i === active
+              ? "border-primary shadow-[0_0_12px_rgba(99,91,255,0.3)]"
+              : "border-transparent opacity-60 hover:opacity-100"
+              }`}
           >
             <img src={item.image} alt="" className="h-full w-full object-contain bg-slate-50" />
           </button>
@@ -530,7 +563,7 @@ export default function HomePageClient({ designs: initialDesigns = [], blogs: in
           <div className="mx-auto w-full max-w-[1400px]">
             <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
               <div className="space-y-1">
-                <p className="text-xs font-semibold uppercase tracking-[0.35em] text-slate-500">Insights</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.35em] text-slate-500">Blogs</p>
                 <h2 className="text-2xl font-semibold text-slate-900 sm:text-3xl">Latest blog posts</h2>
               </div>
               <Link href="/blog" className="text-sm font-semibold text-primary transition hover:text-primary/80">
@@ -636,7 +669,7 @@ export default function HomePageClient({ designs: initialDesigns = [], blogs: in
                   </motion.div>
                 ))}
               </div>
-              
+
               <div className="absolute -inset-4 -z-10 rounded-[40px] bg-slate-100/40 opacity-0 transition-opacity duration-500 hover:opacity-100 hidden lg:block" />
             </div>
 
@@ -645,4 +678,5 @@ export default function HomePageClient({ designs: initialDesigns = [], blogs: in
       </Section>
     </main>
   );
-}
+}
+

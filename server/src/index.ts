@@ -10,7 +10,7 @@ import pricingRoutes from "./routes/pricingRoutes";
 import contentRoutes from "./routes/contentRoutes";
 import uploadRoutes from "./routes/uploadRoutes";
 
-dotenv.config();
+dotenv.config({ path: path.resolve(__dirname, "..", "server.env") });
 
 const app = express();
 

@@ -21,7 +21,7 @@ const iconMap: Record<string, any> = {
   Posters: ImageIcon,
   Banners: Megaphone,
   "Web & Presentations": Monitor,
-  Insights: BookOpen,
+  Blogs: BookOpen,
   About: Info,
   Support: HelpCircle,
 };
@@ -32,7 +32,7 @@ const sectionMap: Record<string, string> = {
   Posters: "posters",
   Banners: "banners",
   "Web & Presentations": "templates",
-  Insights: "insights",
+  Blogs: "insights",
   About: "about",
   Support: "support",
 };

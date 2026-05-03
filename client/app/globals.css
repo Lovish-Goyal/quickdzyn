@@ -1,4 +1,5 @@
-﻿@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
@@ -89,8 +90,8 @@
   }
 
   body {
-    @apply bg-background text-foreground;
-    font-family: var(--font-sans), sans-serif !important;
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
   }
 
   html {
@@ -101,13 +102,19 @@
     @apply text-primary transition-colors hover:text-foreground;
   }
 
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    @apply text-foreground;
+  h1 {
+    @apply text-foreground font-bold tracking-tight;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  h2 {
+    @apply text-foreground font-bold tracking-tight;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  h3 {
+    @apply text-foreground font-semibold;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
   }
 }
 
