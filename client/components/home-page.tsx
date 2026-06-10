@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import { getDesigns, getBlogs } from "@/lib/api";
 import SearchBar from "@/components/search-bar";
+import { ArrowRight, Download, Sparkles, ShieldCheck, RefreshCw, FolderClosed, MessageSquare } from "lucide-react";
 
 /* --- animation helpers ----------------------------------------------------- */
 const stagger = {
@@ -35,32 +36,32 @@ const stats = [
 
 const whyCards = [
   {
-    icon: "?",
+    icon: Download,
     title: "Instant Download",
     desc: "Purchase and download production-ready source files in seconds. No waiting.",
   },
   {
-    icon: "??",
+    icon: Sparkles,
     title: "Pixel-Perfect Quality",
     desc: "Every asset is meticulously crafted with attention to detail and best practices.",
   },
   {
-    icon: "??",
+    icon: ShieldCheck,
     title: "Commercial License",
     desc: "Use in client work, SaaS products, and commercial projects with full rights.",
   },
   {
-    icon: "??",
+    icon: RefreshCw,
     title: "Lifetime Updates",
     desc: "Get free updates whenever assets are improved or expanded by creators.",
   },
   {
-    icon: "??",
+    icon: FolderClosed,
     title: "Multi-Format Files",
     desc: "Figma, Sketch, Canva, PSD, AI — we support all major design tools.",
   },
   {
-    icon: "??",
+    icon: MessageSquare,
     title: "Creator Support",
     desc: "Direct communication with asset creators for custom requests and help.",
   },
@@ -442,21 +443,26 @@ export default function HomePageClient({ designs: initialDesigns = [], blogs: in
             </p>
           </div>
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {whyCards.map((card, i) => (
-              <motion.div
-                key={card.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.06 }}
-                whileHover={{ y: -4 }}
-                className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm hover:shadow-md transition-all"
-              >
-                <span className="text-2xl">{card.icon}</span>
-                <h3 className="mt-3 text-[15px] font-semibold text-slate-900">{card.title}</h3>
-                <p className="mt-2 text-sm text-slate-500 leading-relaxed">{card.desc}</p>
-              </motion.div>
-            ))}
+            {whyCards.map((card, i) => {
+              const Icon = card.icon;
+              return (
+                <motion.div
+                  key={card.title}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.06 }}
+                  whileHover={{ y: -4 }}
+                  className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm hover:shadow-md transition-all"
+                >
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary mb-4">
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <h3 className="text-[15px] font-semibold text-slate-900">{card.title}</h3>
+                  <p className="mt-2 text-sm text-slate-500 leading-relaxed">{card.desc}</p>
+                </motion.div>
+              );
+            })}
           </div>
         </div>
       </Section>
@@ -472,8 +478,9 @@ export default function HomePageClient({ designs: initialDesigns = [], blogs: in
                   Ready-to-use Figma systems
                 </h2>
               </div>
-              <Link href="/category/figma-kits" className="text-sm font-semibold text-primary transition hover:text-primary/80">
-                View all ?
+              <Link href="/category/figma-kits" className="group/link inline-flex items-center gap-1 text-sm font-semibold text-primary transition hover:text-primary/80">
+                View all
+                <ArrowRight className="h-4 w-4 transition-transform group-hover/link:translate-x-0.5" />
               </Link>
             </div>
             <Carousel>
@@ -496,8 +503,9 @@ export default function HomePageClient({ designs: initialDesigns = [], blogs: in
                   Portfolios, pitch decks & social kits
                 </h2>
               </div>
-              <Link href="/category/templates" className="text-sm font-semibold text-primary transition hover:text-primary/80">
-                Explore all ?
+              <Link href="/category/templates" className="group/link inline-flex items-center gap-1 text-sm font-semibold text-primary transition hover:text-primary/80">
+                Explore all
+                <ArrowRight className="h-4 w-4 transition-transform group-hover/link:translate-x-0.5" />
               </Link>
             </div>
             <Carousel>
@@ -520,8 +528,9 @@ export default function HomePageClient({ designs: initialDesigns = [], blogs: in
                   Bold poster systems for events & brands
                 </h2>
               </div>
-              <Link href="/category/posters" className="text-sm font-semibold text-primary transition hover:text-primary/80">
-                View all ?
+              <Link href="/category/posters" className="group/link inline-flex items-center gap-1 text-sm font-semibold text-primary transition hover:text-primary/80">
+                View all
+                <ArrowRight className="h-4 w-4 transition-transform group-hover/link:translate-x-0.5" />
               </Link>
             </div>
             <Carousel>
@@ -544,8 +553,9 @@ export default function HomePageClient({ designs: initialDesigns = [], blogs: in
                   Campaign-ready banners for web & print
                 </h2>
               </div>
-              <Link href="/category/banners" className="text-sm font-semibold text-primary transition hover:text-primary/80">
-                View all ?
+              <Link href="/category/banners" className="group/link inline-flex items-center gap-1 text-sm font-semibold text-primary transition hover:text-primary/80">
+                View all
+                <ArrowRight className="h-4 w-4 transition-transform group-hover/link:translate-x-0.5" />
               </Link>
             </div>
             <Carousel>
@@ -566,8 +576,9 @@ export default function HomePageClient({ designs: initialDesigns = [], blogs: in
                 <p className="text-xs font-semibold uppercase tracking-[0.35em] text-slate-500">Blogs</p>
                 <h2 className="text-2xl font-semibold text-slate-900 sm:text-3xl">Latest blog posts</h2>
               </div>
-              <Link href="/blog" className="text-sm font-semibold text-primary transition hover:text-primary/80">
-                Visit blog ?
+              <Link href="/blog" className="group/link inline-flex items-center gap-1 text-sm font-semibold text-primary transition hover:text-primary/80">
+                Visit blog
+                <ArrowRight className="h-4 w-4 transition-transform group-hover/link:translate-x-0.5" />
               </Link>
             </div>
 
@@ -586,8 +597,9 @@ export default function HomePageClient({ designs: initialDesigns = [], blogs: in
                     <h3 className="mt-1 text-base font-semibold text-slate-900 line-clamp-1">{post.title}</h3>
                     <p className="mt-1 text-sm text-slate-500 line-clamp-1">{post.summary}</p>
                   </div>
-                  <Link href={`/blog/${post.slug}`} className="text-sm font-semibold text-primary shrink-0">
-                    Read ?
+                  <Link href={`/blog/${post.slug}`} className="group/link inline-flex items-center gap-1 text-sm font-semibold text-primary shrink-0">
+                    Read
+                    <ArrowRight className="h-4 w-4 transition-transform group-hover/link:translate-x-0.5" />
                   </Link>
                 </motion.article>
               ))}

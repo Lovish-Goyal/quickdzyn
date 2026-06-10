@@ -22,7 +22,7 @@ export const absoluteUrl = (path = "/") => {
 export const defaultMetadata: Metadata = {
   metadataBase,
   title: {
-    default: `${SITE_NAME} — Premium design marketplace`,
+    default: `${SITE_NAME} | Premium design marketplace`,
     template: `%s | ${SITE_NAME}`,
   },
   description: SITE_TAGLINE,
@@ -45,7 +45,7 @@ export const defaultMetadata: Metadata = {
     locale: "en_US",
     siteName: SITE_NAME,
     url: absoluteUrl("/"),
-    title: `${SITE_NAME} — Premium design marketplace`,
+    title: `${SITE_NAME} | Premium design marketplace`,
     description: SITE_TAGLINE,
     images: [
       {
@@ -60,7 +60,7 @@ export const defaultMetadata: Metadata = {
     card: "summary_large_image",
     site: "@quickdzyn",
     creator: "@quickdzyn",
-    title: `${SITE_NAME} — Premium design marketplace`,
+    title: `${SITE_NAME} | Premium design marketplace`,
     description: SITE_TAGLINE,
     images: [absoluteUrl("/og-default.svg")],
   },
