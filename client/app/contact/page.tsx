@@ -76,9 +76,8 @@ function FAQItem({ q, a }: { q: string; a: string }) {
       >
         <span className="text-sm font-semibold text-slate-800">{q}</span>
         <span
-          className={`flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-500 transition-transform duration-200 ${
-            open ? "rotate-45" : ""
-          }`}
+          className={`flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-500 transition-transform duration-200 ${open ? "rotate-45" : ""
+            }`}
         >
           <svg width="10" height="10" viewBox="0 0 12 12" fill="none">
             <path d="M6 1v10M1 6h10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />

@@ -5,8 +5,12 @@ import { motion } from "framer-motion";
 
 export default function BlogPostClient({ post }: { post: any }) {
   return (
-    <main className="min-h-screen bg-white">
-      <section className="w-full bg-gradient-to-b from-accent2/10 via-white to-white px-6 pt-16 pb-16 sm:pt-20 lg:pt-24">
+    <main className="min-h-screen bg-white relative overflow-hidden">
+      {/* Ambient background glows */}
+      <div className="pointer-events-none absolute -top-24 left-1/4 h-80 w-80 rounded-full bg-primary/10 blur-[120px]" />
+      <div className="pointer-events-none absolute -top-12 right-1/4 h-80 w-80 rounded-full bg-accent2/10 blur-[120px]" />
+
+      <section className="w-full bg-gradient-to-b from-slate-50/50 via-white to-white px-6 pt-8 sm:pt-10 lg:pt-12 pb-16 sm:pb-20">
         <div className="mx-auto w-full max-w-[1200px]">
           <Link
             href="/blog"
@@ -52,8 +56,10 @@ export default function BlogPostClient({ post }: { post: any }) {
                   <ul key={block.items.join("-")} className="space-y-3">
                     {block.items.map((item: string) => (
                       <li key={item} className="flex items-start gap-3">
-                        <span className="mt-1 flex h-6 w-6 items-center justify-center rounded-full bg-primary/20 text-xs font-semibold text-white shadow-[0_0_15px_rgba(99,91,255,0.35)]">
-                          check
+                        <span className="mt-1 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                          <svg width="10" height="8" viewBox="0 0 10 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M1.5 4L3.83333 6.33333L8.5 1.66667" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
                         </span>
                         <span>{item}</span>
                       </li>

@@ -134,6 +134,17 @@ function AdminDashboard() {
   const [contentErrors, setContentErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
+    if (createModalOpen || blogModalOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [createModalOpen, blogModalOpen]);
+
+  useEffect(() => {
     const stored = localStorage.getItem("admin_token");
     if (!stored) {
       router.push("/admin/login");

@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { getDesigns } from "@/lib/api";
 import SearchBar from "@/components/search-bar";
@@ -17,7 +18,10 @@ const gridVariants = {
   },
 };
 
-export default function DesignsPage() {
+function DesignsPageContent() {
+  const searchParams = useSearchParams();
+  const query = searchParams.get("q") || "";
+
   const [templates, setTemplates] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState("All");
@@ -32,18 +36,28 @@ export default function DesignsPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  const filtered =
-    activeFilter === "All"
+  const filtered = useMemo(() => {
+    let list = activeFilter === "All"
       ? templates
       : templates.filter((t) =>
           (t.categories || []).some((c: string) =>
             c.toLowerCase().includes(activeFilter.toLowerCase())
           )
         );
+    
+    if (query.trim()) {
+      const lowerQuery = query.toLowerCase().trim();
+      list = list.filter((t) =>
+        t.title?.toLowerCase().includes(lowerQuery) ||
+        t.description?.toLowerCase().includes(lowerQuery)
+      );
+    }
+    return list;
+  }, [templates, activeFilter, query]);
 
   return (
     <main className="min-h-screen bg-white">
-      <section className="relative w-full overflow-hidden bg-white px-6 pt-16 pb-16 sm:pt-20 lg:pt-24 sm:pb-24">
+      <section className="relative w-full overflow-hidden bg-white px-6 pt-8 sm:pt-10 lg:pt-12 pb-16 sm:pb-24">
         <div className="pointer-events-none absolute -top-24 left-6 h-64 w-64 rounded-full bg-primary/15 blur-[140px]" />
         <div className="pointer-events-none absolute bottom-0 right-6 h-64 w-64 rounded-full bg-accent2/20 blur-[140px]" />
         <div className="mx-auto w-full max-w-[1400px]">
@@ -60,7 +74,7 @@ export default function DesignsPage() {
               <h1 className="text-3xl font-semibold text-slate-900 sm:text-4xl lg:text-5xl">
                 Curated assets for fast-moving teams
               </h1>
-              <p className="max-w-2xl text-base text-slate-600 sm:text-lg">
+              <p className="max-w-4xl text-base text-slate-600 sm:text-lg">
                 Explore premium posters, banners, and social kits crafted for Canva and Figma with production-ready specs.
               </p>
               <div className="flex flex-wrap gap-3">
@@ -111,7 +125,7 @@ export default function DesignsPage() {
                 onClick={() => setActiveFilter(filter)}
                 className={`rounded-full px-5 py-2 text-sm font-semibold transition ${
                   activeFilter === filter
-                    ? "bg-primary text-white shadow-[0_4px_20px_rgba(99,91,255,0.3)]"
+                    ? "bg-primary text-white shadow-[0_4px_20px_rgba(99,91,255,0.35)]"
                     : "border border-slate-200 bg-white/90 text-slate-700 hover:border-primary/60 hover:text-slate-900"
                 }`}
               >
@@ -124,8 +138,7 @@ export default function DesignsPage() {
           <motion.div
             variants={gridVariants}
             initial="hidden"
-            whileInView="show"
-            viewport={{ once: true, amount: 0.2 }}
+            animate="show"
             className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3"
           >
             {loading ? (
@@ -135,6 +148,10 @@ export default function DesignsPage() {
                   className="h-[320px] animate-pulse rounded-3xl border border-slate-200 bg-white"
                 />
               ))
+            ) : filtered.length === 0 ? (
+              <div className="col-span-full mt-12 text-center text-slate-500">
+                No designs found matching your search.
+              </div>
             ) : (
               filtered.map((template) => (
                 <motion.div
@@ -161,17 +178,12 @@ export default function DesignsPage() {
                       </button>
 
                       <img
-                        src={template.images?.[0] || template.image}
+                        src={template.image || (template.images && template.images[0])}
                         alt={template.title}
-                        className="h-full w-full object-contain bg-white transition-transform duration-500 ease-out group-hover:scale-105 rounded-xl"
+                        className="h-full w-full object-contain transition-transform duration-500 group-hover:scale-105"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100 flex items-end p-5">
-                        <span className="rounded-full bg-primary px-5 py-2 text-xs font-semibold text-white shadow-lg backdrop-blur-sm">
-                          Preview Details
-                        </span>
-                      </div>
                     </div>
-                    <div className="flex flex-1 flex-col justify-between p-6 bg-white relative">
+                    <div className="flex flex-1 flex-col justify-between p-6">
                       <div className="space-y-2">
                         <div className="flex items-start justify-between gap-3">
                           <h2 className="text-[17px] font-bold text-slate-900 line-clamp-1 group-hover:text-primary transition-colors">{template.title}</h2>
@@ -198,5 +210,17 @@ export default function DesignsPage() {
         </div>
       </section>
     </main>
+  );
+}
+
+export default function DesignsPage() {
+  return (
+    <Suspense fallback={
+      <main className="min-h-screen bg-white">
+        <div className="h-20 w-full animate-pulse bg-slate-100" />
+      </main>
+    }>
+      <DesignsPageContent />
+    </Suspense>
   );
 }

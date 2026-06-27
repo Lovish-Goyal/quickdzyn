@@ -37,7 +37,7 @@ const sectionMap: Record<string, string> = {
   Support: "support",
 };
 
-export default function AdminSidebar() {
+export default function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const currentSection = searchParams.get("section") || "home";
@@ -64,6 +64,7 @@ export default function AdminSidebar() {
               <Link
                 key={item.href}
                 href={`/admin/dashboard?section=${section}`}
+                onClick={onNavigate}
                 className={`flex items-center gap-3 rounded-xl px-4 py-2.5 text-[15px] transition-colors ${
                   active
                     ? "bg-primary/10 text-primary font-semibold"
@@ -88,6 +89,7 @@ export default function AdminSidebar() {
           </p>
           <Link
             href="/admin/dashboard?section=support"
+            onClick={onNavigate}
             className="mt-3 inline-flex w-full items-center justify-center rounded-full bg-primary px-3 py-2 text-xs font-semibold text-white"
           >
             Support

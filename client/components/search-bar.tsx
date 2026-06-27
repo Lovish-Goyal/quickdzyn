@@ -1,17 +1,48 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, Suspense } from "react";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 
-export default function SearchBar({ placeholder = "Search designs, templates, posters..." }: { placeholder?: string }) {
+function SearchBarInput({ placeholder }: { placeholder: string }) {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [searchQuery, setSearchQuery] = useState("");
+
+  // Keep search input in sync with URL parameter
+  useEffect(() => {
+    setSearchQuery(searchParams.get("q") || "");
+  }, [searchParams]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setSearchQuery(val);
+
+    if (pathname === "/designs" || pathname.startsWith("/category/")) {
+      const params = new URLSearchParams(searchParams.toString());
+      if (val.trim()) {
+        params.set("q", val);
+      } else {
+        params.delete("q");
+      }
+      router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    }
+  };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    if (searchQuery.trim()) {
-      router.push(`/designs?q=${encodeURIComponent(searchQuery.trim())}`);
-      setSearchQuery("");
+    const query = searchQuery.trim();
+    if (pathname === "/designs" || pathname.startsWith("/category/")) {
+      // Already filtered in real-time, just blur input focus
+      if (document.activeElement instanceof HTMLElement) {
+        document.activeElement.blur();
+      }
+    } else {
+      if (query) {
+        router.push(`/designs?q=${encodeURIComponent(query)}`);
+      } else {
+        router.push("/designs");
+      }
     }
   };
 
@@ -25,7 +56,7 @@ export default function SearchBar({ placeholder = "Search designs, templates, po
         type="text"
         placeholder={placeholder}
         value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
+        onChange={handleChange}
         className="flex-1 bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-400"
       />
       <button
@@ -35,5 +66,13 @@ export default function SearchBar({ placeholder = "Search designs, templates, po
         Search
       </button>
     </form>
+  );
+}
+
+export default function SearchBar({ placeholder = "Search designs, templates, posters..." }: { placeholder?: string }) {
+  return (
+    <Suspense fallback={<div className="h-10 w-full animate-pulse rounded-full bg-slate-100 sm:max-w-lg" />}>
+      <SearchBarInput placeholder={placeholder} />
+    </Suspense>
   );
 }

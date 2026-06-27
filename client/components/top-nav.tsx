@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 
 export const siteNavLinks = [
@@ -20,6 +21,22 @@ export default function TopNav() {
   const pathname = usePathname();
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (menuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [menuOpen]);
 
   return (
     <motion.header
@@ -29,8 +46,15 @@ export default function TopNav() {
       className="sticky top-0 z-50 w-full border-b border-slate-200 bg-white/90 backdrop-blur-md"
     >
       <div className="mx-auto flex w-full max-w-[1400px] items-center gap-4 px-6 py-3">
-        <Link href="/" className="text-lg font-semibold tracking-tight text-slate-900">
-          QuickDzyn
+        <Link href="/" className="flex items-center gap-2.5 hover:opacity-90 transition group">
+          <img
+            src="/icon.svg"
+            alt="QuickDzyn logo"
+            className="h-8 w-8 rounded-xl shadow-md shadow-primary/10 transition-transform group-hover:scale-105"
+          />
+          <span className="text-xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-slate-900 via-slate-800 to-slate-950">
+            QuickDzyn
+          </span>
         </Link>
 
         <div className="ml-auto hidden items-center gap-x-6 gap-y-2 md:flex">
@@ -89,58 +113,84 @@ export default function TopNav() {
       </div>
 
 
-      {menuOpen ? (
-        <div className="fixed inset-0 z-[60] md:hidden">
-          <button
-            type="button"
-            onClick={() => setMenuOpen(false)}
-            className="absolute inset-0 bg-slate-950/50"
-            aria-label="Close menu backdrop"
-          />
-          <aside className="absolute right-0 top-0 h-full w-72 max-w-[85vw] bg-white p-6 shadow-2xl">
-            <div className="flex items-center justify-between">
-              <span className="text-base font-semibold text-slate-900">QuickDzyn</span>
-              <button
-                type="button"
+      {mounted && typeof document !== "undefined" && createPortal(
+        <AnimatePresence>
+          {menuOpen && (
+            <div className="fixed inset-0 z-[999] md:hidden flex justify-end">
+              {/* Backdrop */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.25 }}
                 onClick={() => setMenuOpen(false)}
-                className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-slate-700"
-                aria-label="Close menu"
+                className="absolute inset-0 bg-slate-950/60 backdrop-blur-[2px]"
+                aria-label="Close menu backdrop"
+              />
+
+              {/* Drawer Panel */}
+              <motion.aside
+                initial={{ x: "100%" }}
+                animate={{ x: 0 }}
+                exit={{ x: "100%" }}
+                transition={{ type: "spring", damping: 26, stiffness: 220 }}
+                className="relative h-full w-72 max-w-[85vw] bg-white p-6 shadow-2xl flex flex-col z-10"
               >
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M1 1L13 13M13 1L1 13" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-                </svg>
-              </button>
-            </div>
-
-            <nav className="mt-6 flex flex-col gap-3 text-sm font-semibold text-slate-700">
-              {siteNavLinks.map((link) => {
-                const isActive =
-                  pathname === link.href ||
-                  (link.href !== "/" && pathname.startsWith(link.href));
-                return (
-                  <Link
-                    key={link.href}
-                    href={link.href}
+                <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+                  <div className="flex items-center gap-2">
+                    <img
+                      src="/icon.svg"
+                      alt="QuickDzyn logo"
+                      className="h-6 w-6 rounded-lg shadow-sm shadow-primary/10"
+                    />
+                    <span className="text-base font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-slate-900 via-slate-800 to-slate-950">
+                      QuickDzyn
+                    </span>
+                  </div>
+                  <button
+                    type="button"
                     onClick={() => setMenuOpen(false)}
-                    className={`rounded-xl px-3 py-2 transition ${isActive ? "bg-primary/10 text-primary" : "hover:bg-slate-100"
-                      }`}
+                    className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-slate-700 hover:bg-slate-50 transition"
+                    aria-label="Close menu"
                   >
-                    {link.label}
-                  </Link>
-                );
-              })}
-            </nav>
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M1 1L13 13M13 1L1 13" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                    </svg>
+                  </button>
+                </div>
 
-            <Link
-              href="/designs"
-              onClick={() => setMenuOpen(false)}
-              className="mt-6 inline-flex w-full items-center justify-center rounded-full bg-primary px-5 py-3 text-sm font-semibold text-white shadow-[0_0_30px_rgba(99,91,255,0.35)]"
-            >
-              Browse Designs
-            </Link>
-          </aside>
-        </div>
-      ) : null}
+                <nav className="mt-6 flex flex-col gap-2.5 text-sm font-semibold text-slate-700 overflow-y-auto pr-1">
+                  {siteNavLinks.map((link) => {
+                    const isActive =
+                      pathname === link.href ||
+                      (link.href !== "/" && pathname.startsWith(link.href));
+                    return (
+                      <Link
+                        key={link.href}
+                        href={link.href}
+                        onClick={() => setMenuOpen(false)}
+                        className={`rounded-xl px-3 py-3 transition text-[15px] ${isActive ? "bg-primary/10 text-primary font-bold" : "hover:bg-slate-50"
+                          }`}
+                      >
+                        {link.label}
+                      </Link>
+                    );
+                  })}
+                </nav>
+
+                <Link
+                  href="/designs"
+                  onClick={() => setMenuOpen(false)}
+                  className="mt-auto inline-flex w-full items-center justify-center rounded-full bg-primary px-5 py-3.5 text-sm font-semibold text-white shadow-[0_4px_20px_rgba(99,91,255,0.35)] hover:bg-primary/95 transition"
+                >
+                  Browse Designs
+                </Link>
+              </motion.aside>
+            </div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </motion.header>
   );
 }

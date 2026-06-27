@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
 export default function Modal({
@@ -19,6 +20,16 @@ export default function Modal({
   onConfirm: () => void;
   onCancel: () => void;
 }) {
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open]);
   return (
     <AnimatePresence>
       {open ? (

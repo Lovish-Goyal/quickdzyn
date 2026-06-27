@@ -118,20 +118,31 @@ export default function TermsPage() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-white">
-      <section className="w-full bg-gradient-to-b from-primary/10 via-white to-white px-6 py-16 sm:py-20">
+    <main className="min-h-screen bg-white relative overflow-hidden">
+      {/* Ambient background glows */}
+      <div className="pointer-events-none absolute -top-24 left-1/4 h-80 w-80 rounded-full bg-primary/10 blur-[120px]" />
+      <div className="pointer-events-none absolute -top-12 right-1/4 h-80 w-80 rounded-full bg-accent2/10 blur-[120px]" />
+
+      <section className="w-full bg-gradient-to-b from-slate-50/50 via-white to-white px-6 pt-8 sm:pt-10 lg:pt-12 pb-16 sm:pb-20">
         <div className="mx-auto w-full max-w-[1400px] space-y-10">
           <motion.div
-            initial={{ opacity: 0, y: 16 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: "easeOut" }}
-            className="space-y-4"
+            className="flex flex-col items-center text-center space-y-6 max-w-3xl mx-auto"
           >
-            <p className="text-xs font-semibold uppercase tracking-[0.35em] text-slate-500">Legal</p>
-            <h1 className="text-3xl font-semibold text-slate-900 sm:text-4xl">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3.5 py-1.5 text-xs font-semibold uppercase tracking-wider text-primary">
+              <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+              QD Legal
+            </span>
+
+            <h1 className="pb-2 text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl lg:text-6xl bg-clip-text text-transparent bg-gradient-to-r from-slate-900 via-slate-800 to-slate-950">
               {loading ? "Loading terms..." : content.title}
             </h1>
-            <p className="text-sm text-slate-500">Last updated: March 14, 2026</p>
+            
+            <p className="text-sm font-medium text-slate-500">
+              Last updated: March 14, 2026
+            </p>
           </motion.div>
 
           <div className="rounded-3xl border border-slate-200 bg-white/90 p-6 text-sm text-slate-600 shadow-[0_20px_40px_rgba(15,23,42,0.08)]">

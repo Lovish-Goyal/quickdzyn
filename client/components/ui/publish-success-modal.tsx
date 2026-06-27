@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle2 } from "lucide-react";
 import Link from "next/link";
@@ -17,6 +18,16 @@ export function PublishSuccessModal({
   storeHref?: string;
   onClose: () => void;
 }) {
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open]);
   return (
     <AnimatePresence>
       {open ? (

@@ -237,9 +237,17 @@ function Section({ children, className = "" }: { children: React.ReactNode; clas
 }
 
 /* --- Auto-cycling Hero Showcase -------------------------------------------- */
+const showcaseImages = [
+  "/showcase/dashboard_ui_design.png",
+  "/showcase/marketing_banner_professional.png",
+  "/showcase/corporate_banner_design.png",
+  "/showcase/mobile_banking_ui.png",
+  "/showcase/corporate_dashboard_ui.png"
+];
+
 function HeroShowcase({ designs }: { designs: any[] }) {
   const [active, setActive] = useState(0);
-  const items = designs.slice(0, 5);
+  const items = showcaseImages;
 
   useEffect(() => {
     if (items.length <= 1) return;
@@ -249,39 +257,36 @@ function HeroShowcase({ designs }: { designs: any[] }) {
     return () => clearInterval(timer);
   }, [items.length]);
 
-  if (items.length === 0) return null;
-
   return (
     <div className="relative w-full rounded-[32px] overflow-hidden border border-slate-100 shadow-xl bg-white">
       {/* Main image with crossfade */}
-      <div className="relative aspect-[4/3] bg-slate-100">
+      <div className="relative aspect-[4/3] bg-[#f8fafc]">
         <AnimatePresence mode="wait">
           <motion.img
-            key={items[active]?.image}
-            src={items[active]?.image}
-            alt={items[active]?.title}
+            key={items[active]}
+            src={items[active]}
+            alt={`Showcase design template ${active + 1}`}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.5 }}
-            className="absolute inset-0 h-full w-full object-contain bg-slate-50"
+            className="absolute inset-0 h-full w-full object-contain bg-[#f8fafc]"
           />
         </AnimatePresence>
-        {/* Gradient overlay at bottom */}
       </div>
 
       {/* Thumbnail strip */}
       <div className="flex gap-2 p-3 bg-white">
-        {items.map((item: any, i: number) => (
+        {items.map((imgSrc: string, i: number) => (
           <button
-            key={item._id || i}
+            key={i}
             onClick={() => setActive(i)}
             className={`relative flex-1 h-14 rounded-xl overflow-hidden border-2 transition-all ${i === active
               ? "border-primary shadow-[0_0_12px_rgba(99,91,255,0.3)]"
               : "border-transparent opacity-60 hover:opacity-100"
               }`}
           >
-            <img src={item.image} alt="" className="h-full w-full object-contain bg-slate-50" />
+            <img src={imgSrc} alt="" className="h-full w-full object-contain bg-[#f8fafc]" />
           </button>
         ))}
       </div>
@@ -429,7 +434,7 @@ export default function HomePageClient({ designs: initialDesigns = [], blogs: in
       </section>
 
       {/* --- WHY QUICKDZYN (replaces bad asset library section) --- */}
-      <Section className="w-full bg-slate-50 px-6 pt-40 pb-12 lg:pt-56 lg:pb-16 mt-16">
+      <Section className="w-full bg-slate-50 px-6 py-16 sm:py-20 lg:py-24">
         <div className="mx-auto w-full max-w-[1400px]">
           <div className="text-center mb-12">
             <p className="text-base sm:text-lg lg:text-xl font-bold uppercase tracking-[0.35em] text-primary mb-4">

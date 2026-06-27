@@ -29,20 +29,29 @@ export default function BlogPage() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-white">
-      <section className="w-full bg-gradient-to-b from-primary/10 via-white to-white px-6 pt-16 pb-16 sm:pt-20 lg:pt-24 sm:pb-24">
+    <main className="min-h-screen bg-white relative overflow-hidden">
+      {/* Ambient background glows */}
+      <div className="pointer-events-none absolute -top-24 left-1/4 h-80 w-80 rounded-full bg-primary/10 blur-[120px]" />
+      <div className="pointer-events-none absolute -top-12 right-1/4 h-80 w-80 rounded-full bg-accent2/10 blur-[120px]" />
+
+      <section className="w-full bg-gradient-to-b from-slate-50/50 via-white to-white px-6 pt-8 sm:pt-10 lg:pt-12 pb-16 sm:pb-20">
         <div className="mx-auto w-full max-w-[1400px]">
           <motion.div
-            initial={{ opacity: 0, y: 16 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: "easeOut" }}
-            className="space-y-4"
+            className="flex flex-col items-center text-center space-y-6 max-w-4xl mx-auto mb-10"
           >
-            <p className="text-xs font-semibold uppercase tracking-[0.35em] text-slate-500">Blog</p>
-            <h1 className="text-3xl font-semibold text-slate-900 sm:text-4xl">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3.5 py-1.5 text-xs font-semibold uppercase tracking-wider text-primary">
+              <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+              QuickDzyn Blog
+            </span>
+
+            <h1 className="pb-2 text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl lg:text-6xl bg-clip-text text-transparent bg-gradient-to-r from-slate-900 via-slate-800 to-slate-950">
               Insights, workflows, and template strategy
             </h1>
-            <p className="max-w-2xl text-base text-slate-600 sm:text-lg">
+
+            <p className="max-w-4xl text-base text-slate-600 sm:text-lg leading-relaxed">
               Practical guidance for shipping consistent visuals faster with Figma and Canva templates.
             </p>
           </motion.div>
@@ -50,8 +59,7 @@ export default function BlogPage() {
           <motion.div
             variants={listVariants}
             initial="hidden"
-            whileInView="show"
-            viewport={{ once: true, amount: 0.2 }}
+            animate="show"
             className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
           >
             {loading

@@ -1,11 +1,35 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Facebook, Instagram, Linkedin, Twitter } from "lucide-react";
 
-
-
 export default function Footer() {
+  const pathname = usePathname();
+
+  const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (pathname === href) {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
+  const col1Links = [
+    { href: "/", label: "Home" },
+    { href: "/category/figma-kits", label: "Figma UI Kits" },
+    { href: "/category/posters", label: "Posters" },
+    { href: "/category/banners", label: "Banners" },
+    { href: "/category/templates", label: "Web & Presentations" },
+  ];
+
+  const col2Links = [
+    { href: "/blog", label: "Blogs" },
+    { href: "/about", label: "About" },
+    { href: "/contact", label: "Support" },
+    { href: "/privacy", label: "Privacy Policy" },
+    { href: "/terms", label: "Terms & Conditions" },
+  ];
+
   return (
     <footer className="w-full bg-white">
       <div className="relative w-full overflow-hidden bg-gradient-to-br from-[#5f55ff] via-[#6a62ff] to-[#7b72ff] text-white">
@@ -43,31 +67,24 @@ export default function Footer() {
               </div>
               <div className="flex gap-x-8 text-sm text-white">
                 <div className="space-y-2.5 flex-1">
-                  {[
-                    { href: "/", label: "Home" },
-                    { href: "/contact", label: "Contacts" },
-                    { href: "/designs", label: "Services" },
-                    { href: "/privacy", label: "Privacy Policy" },
-                  ].map((link) => (
+                  {col1Links.map((link) => (
                     <Link
                       key={link.label}
                       href={link.href}
-                      className="block font-medium text-white/90 transition hover:text-white whitespace-nowrap"
+                      onClick={(e) => handleLinkClick(e, link.href)}
+                      className="block font-medium text-white/90 transition hover:text-white sm:whitespace-nowrap"
                     >
                       {link.label}
                     </Link>
                   ))}
                 </div>
                 <div className="space-y-2.5 flex-1">
-                  {[
-                    { href: "/about", label: "About Us" },
-                    { href: "/terms", label: "Terms & Conditions" },
-                    { href: "/designs", label: "Features" },
-                  ].map((link) => (
+                  {col2Links.map((link) => (
                     <Link
                       key={link.label}
                       href={link.href}
-                      className="block font-medium text-white/90 transition hover:text-white whitespace-nowrap"
+                      onClick={(e) => handleLinkClick(e, link.href)}
+                      className="block font-medium text-white/90 transition hover:text-white sm:whitespace-nowrap"
                     >
                       {link.label}
                     </Link>

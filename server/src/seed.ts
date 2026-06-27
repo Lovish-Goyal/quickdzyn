@@ -15,9 +15,9 @@ const designs = [
     title: "SaaS Dashboard UI Kit",
     slug: "saas-dashboard-ui-kit",
     price: "$49",
-    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80",
+    image: "/showcase/dashboard_ui_design.png",
     images: [
-      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80",
+      "/showcase/dashboard_ui_design.png",
       "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80",
     ],
     description: "A complete dashboard UI kit with 60+ responsive components, charts, tables, and data visualization widgets. Built for Figma with auto-layout and dark mode support.",
@@ -34,9 +34,9 @@ const designs = [
     title: "E-Commerce Pro UI Kit",
     slug: "ecommerce-pro-ui-kit",
     price: "$59",
-    image: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=800&q=80",
+    image: "/showcase/marketing_banner_professional.png",
     images: [
-      "https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=800&q=80",
+      "/showcase/marketing_banner_professional.png",
       "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&q=80",
     ],
     description: "Complete e-commerce design system featuring product cards, checkout flows, cart UI, and user profile screens. Pixel-perfect Figma components with a modern aesthetic.",
@@ -53,9 +53,9 @@ const designs = [
     title: "Mobile App Wireframe Kit",
     slug: "mobile-app-wireframe-kit",
     price: "$29",
-    image: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800&q=80",
+    image: "/showcase/corporate_banner_design.png",
     images: [
-      "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800&q=80",
+      "/showcase/corporate_banner_design.png",
       "https://images.unsplash.com/photo-1522542550221-31fd19575a2d?w=800&q=80",
     ],
     description: "A library of 120+ pre-designed mobile application layouts to help you mockup your iOS or Android app ideas in record time. Includes user onboarding, profile settings, and payment pages.",
@@ -72,10 +72,10 @@ const designs = [
     title: "Fintech Mobile Banking UI Kit",
     slug: "fintech-mobile-banking-ui",
     price: "$69",
-    image: "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=800&q=80",
+    image: "/showcase/mobile_banking_ui.png",
     images: [
-      "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=800&q=80",
-      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80"
+      "/showcase/mobile_banking_ui.png",
+      "/showcase/dashboard_ui_design.png"
     ],
     description: "Secure, modern, and detailed user interface kit for digital banking apps. Includes transaction details, card management, dark theme variants, and animated transitions guidelines.",
     features: [
@@ -91,10 +91,10 @@ const designs = [
     title: "Healthcare Telemedicine App UI Kit",
     slug: "healthcare-app-ui-kit",
     price: "$39",
-    image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=800&q=80",
+    image: "/showcase/corporate_dashboard_ui.png",
     images: [
-      "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=800&q=80",
-      "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800&q=80"
+      "/showcase/corporate_dashboard_ui.png",
+      "/showcase/corporate_banner_design.png"
     ],
     description: "Telemedicine mobile UI design system for patient-doctor appointments, symptom checkers, digital prescriptions, and video calling layouts.",
     features: [

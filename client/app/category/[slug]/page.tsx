@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useParams, useSearchParams } from "next/navigation";
+import { useEffect, useMemo, useState, Suspense } from "react";
 import { motion } from "framer-motion";
 import { getDesigns } from "@/lib/api";
 import SearchBar from "@/components/search-bar";
@@ -47,9 +47,11 @@ const getCategoryDetails = (slug: string) => {
     }
 };
 
-export default function CategoryPage() {
+function CategoryPageContent() {
     const params = useParams<{ slug: string }>();
     const slug = params?.slug ?? "";
+    const searchParams = useSearchParams();
+    const query = searchParams.get("q") || "";
 
     const [designs, setDesigns] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
@@ -66,10 +68,18 @@ export default function CategoryPage() {
 
     const filteredDesigns = useMemo(() => {
         if (!categoryInfo) return [];
-        return designs.filter((item) =>
+        let list = designs.filter((item) =>
             item.categories?.some((c) => categoryInfo.filters.includes(c))
         );
-    }, [categoryInfo, designs]);
+        if (query.trim()) {
+            const lowerQuery = query.toLowerCase().trim();
+            list = list.filter((item) =>
+                item.title?.toLowerCase().includes(lowerQuery) ||
+                item.description?.toLowerCase().includes(lowerQuery)
+            );
+        }
+        return list;
+    }, [categoryInfo, designs, query]);
 
     if (!categoryInfo) {
         return (
@@ -90,23 +100,37 @@ export default function CategoryPage() {
     }
 
     return (
-        <main className="min-h-screen bg-white">
-            <section className="w-full bg-gradient-to-b from-accent2/10 via-white to-white px-6 pt-16 pb-16 sm:pt-20 sm:pb-20 lg:pt-24">
+        <main className="min-h-screen bg-white relative overflow-hidden">
+            {/* Ambient background glows */}
+            <div className="pointer-events-none absolute -top-24 left-1/4 h-80 w-80 rounded-full bg-primary/10 blur-[120px]" />
+            <div className="pointer-events-none absolute -top-12 right-1/4 h-80 w-80 rounded-full bg-accent2/10 blur-[120px]" />
+
+            <section className="w-full bg-gradient-to-b from-slate-50/50 via-white to-white px-6 pt-8 sm:pt-10 lg:pt-12 pb-16 sm:pb-20">
                 <div className="mx-auto w-full max-w-[1400px]">
                     <motion.div
-                        initial={{ opacity: 0, y: 16 }}
+                        initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6, ease: "easeOut", delay: 0.1 }}
-                        className="space-y-4"
+                        transition={{ duration: 0.6, ease: "easeOut" }}
+                        className="flex flex-col items-center text-center space-y-6 max-w-4xl mx-auto"
                     >
-                        <h1 className="text-3xl font-semibold text-slate-900 sm:text-4xl">
+                        {/* Premium Category Pill */}
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3.5 py-1.5 text-xs font-semibold uppercase tracking-wider text-primary">
+                            <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+                            Premium Templates
+                        </span>
+
+                        <h1 className="pb-2 text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl lg:text-6xl bg-clip-text text-transparent bg-gradient-to-r from-slate-900 via-slate-800 to-slate-950">
                             {categoryInfo.title}
                         </h1>
-                        <p className="max-w-2xl text-base text-slate-600 sm:text-lg">
+                        
+                        <p className="max-w-4xl text-base text-slate-600 sm:text-lg leading-relaxed">
                             {categoryInfo.description}
                         </p>
-                        <div className="pt-2">
-                            <SearchBar placeholder="Search related designs..." />
+
+                        <div className="w-full max-w-xl pt-2 relative z-10">
+                            <div className="shadow-lg shadow-slate-100 rounded-full">
+                                <SearchBar placeholder="Search related designs..." />
+                            </div>
                         </div>
                     </motion.div>
 
@@ -127,8 +151,7 @@ export default function CategoryPage() {
                         <motion.div
                             variants={gridVariants}
                             initial="hidden"
-                            whileInView="show"
-                            viewport={{ once: true, amount: 0.2 }}
+                            animate="show"
                             className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
                         >
                             {filteredDesigns.map((template) => (
@@ -171,5 +194,21 @@ export default function CategoryPage() {
                 </div>
             </section>
         </main>
+    );
+}
+
+export default function CategoryPage() {
+    return (
+        <Suspense fallback={
+            <main className="min-h-screen bg-white">
+                <section className="w-full bg-gradient-to-b from-slate-50/50 via-white to-white px-6 pt-8 sm:pt-10 lg:pt-12 pb-16 sm:pb-20">
+                    <div className="mx-auto w-full max-w-[1400px] text-center">
+                        <div className="h-8 w-48 animate-pulse rounded bg-slate-200 mx-auto" />
+                    </div>
+                </section>
+            </main>
+        }>
+            <CategoryPageContent />
+        </Suspense>
     );
 }
